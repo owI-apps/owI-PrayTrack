@@ -1,12 +1,12 @@
+import { addPoint } from '../app.js';
 let riwayatInfaq = [];
+let alreadyGotPoints = false;
 
 export default function renderInvestasi() {
     const main = document.getElementById('main-content');
-    
     const totalInfaq = riwayatInfaq.reduce((sum, item) => sum + item.nominal, 0);
 
     main.innerHTML = `
-        <button onclick="window.goHome()" class="flex items-center text-sky-600 mb-4 font-semibold"><i data-lucide="arrow-left" class="w-5 h-5 mr-1"></i> Kembali</button>
         <h2 class="text-xl font-bold mb-4 text-gray-800">Investasi Akhirat</h2>
         
         <div class="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl p-6 mb-6 shadow-lg text-center">
@@ -15,7 +15,7 @@ export default function renderInvestasi() {
         </div>
 
         <div class="bg-white rounded-xl shadow p-4 mb-4">
-            <h3 class="font-semibold mb-3">Catat Infaq Baru</h3>
+            <h3 class="font-semibold mb-3">Catat Infaq Baru (+10 Poin)</h3>
             <div class="flex gap-2">
                 <div class="relative w-2/3">
                     <span class="absolute left-3 top-2.5 text-gray-500">Rp</span>
@@ -25,7 +25,7 @@ export default function renderInvestasi() {
             </div>
         </div>
 
-        <h3 class="font-semibold text-gray-600 mb-2 mt-4">Riwayat</h3>
+        <h3 class="font-semibold text-gray-600 mb-2">Riwayat</h3>
         ${riwayatInfaq.length === 0 ? '<p class="text-sm text-gray-400 text-center py-4">Belum ada catatan</p>' : ''}
         <div class="space-y-2">
             ${riwayatInfaq.map((item, index) => `
@@ -45,16 +45,16 @@ export default function renderInvestasi() {
 window.tambahInfaq = () => {
     const input = document.getElementById('input-nominal');
     const nominal = parseInt(input.value);
-    
-    if (!nominal || nominal <= 0) {
-        alert('Masukkan nominal yang valid!');
-        return;
-    }
+    if (!nominal || nominal <= 0) { alert('Masukkan nominal valid!'); return; }
 
     const tanggal = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    riwayatInfaq.unshift({ nominal, tanggal });
     
-    riwayatInfaq.unshift({ nominal, tanggal }); // Unshift biar yang baru di atas
-    renderInvestasi(); // Render ulang
+    if(!alreadyGotPoints) {
+        addPoint('infaq', 10);
+        alreadyGotPoints = true;
+    }
+    renderInvestasi();
 }
 
 window.hapusInfaq = (index) => {
