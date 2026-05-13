@@ -1,48 +1,73 @@
+import { appState } from '../app.js';
+
 export function renderDashboard() {
     const main = document.getElementById('main-content');
     
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 11) return "Selamat Pagi";
-        if (hour < 15) return "Selamat Siang";
-        if (hour < 18) return "Selamat Sore";
-        return "Selamat Malam";
+    const totalPoin = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
+    const percentage = Math.min((totalPoin / 100) * 100, 100); // Maks 100
+    const yesterday = appState.yesterdayPoints;
+
+    let statusMsg = "";
+    let statusColor = "text-gray-500";
+    if (percentage === 100) {
+        statusMsg = "🔥 PERFECT! Kamu luar biasa hari ini!";
+        statusColor = "text-green-500";
+    } else if (totalPoin > yesterday) {
+        statusMsg = "⬆️ Lebih baik dari kemarin!";
+        statusColor = "text-sky-600";
+    } else if (totalPoin === yesterday) {
+        statusMsg = "➡️ Sama dengan kemarin.";
+        statusColor = "text-gray-500";
+    } else {
+        statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
+        statusColor = "text-orange-500";
     }
 
+    // SVG Circle Logic (Radius 70, Keliling = 2 * PI * 70 = 439.8)
+    const circumference = 439.8;
+    const offset = circumference - (percentage / 100) * circumference;
+
     main.innerHTML = `
-        <div class="mb-6">
-            <h2 class="text-xl font-bold text-gray-800">${getGreeting()}, Brad!</h2>
-            <p class="text-gray-500 text-sm">Jangan lupa agendamu hari ini.</p>
+        <div class="flex flex-col items-center mt-4 mb-8">
+            <div class="relative">
+                <svg class="w-48 h-48" viewBox="0 0 160 160">
+                    <circle class="text-gray-200" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" stroke="currentColor"/>
+                    <circle class="text-sky-500 progress-ring__circle" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" 
+                        stroke-linecap="round" stroke="currentColor" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-4xl font-bold text-gray-800">${Math.round(percentage)}%</span>
+                    <span class="text-sm text-gray-500">${totalPoin} Poin</span>
+                </div>
+            </div>
+            <p class="mt-4 font-semibold text-center ${statusColor}">${statusMsg}</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <!-- Tombol Sholat -->
-            <button onclick="window.navigateTo('sholat')" class="bg-sky-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center active:scale-95 transition-transform h-36">
-                <i data-lucide="check-circle" class="w-10 h-10 mb-2"></i>
-                <span class="font-bold text-sm">Sholat</span>
-                <span class="text-xs opacity-80">Wajib & Sunnah</span>
-            </button>
-
-            <!-- Tombol Al-Quran -->
-            <button onclick="window.navigateTo('quran')" class="bg-emerald-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center active:scale-95 transition-transform h-36">
-                <i data-lucide="book-open" class="w-10 h-10 mb-2"></i>
-                <span class="font-bold text-sm">Baca Al-Quran</span>
-                <span class="text-xs opacity-80">Last Read</span>
-            </button>
-
-            <!-- Tombol Utang Ibadah -->
-            <button onclick="window.navigateTo('utang')" class="bg-orange-500 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center active:scale-95 transition-transform h-36">
-                <i data-lucide="clock" class="w-10 h-10 mb-2"></i>
-                <span class="font-bold text-sm">Utang Ibadah</span>
-                <span class="text-xs opacity-80">Sholat & Puasa</span>
-            </button>
-
-            <!-- Tombol Investasi -->
-            <button onclick="window.navigateTo('investasi')" class="bg-purple-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center active:scale-95 transition-transform h-36">
-                <i data-lucide="heart-handshake" class="w-10 h-10 mb-2"></i>
-                <span class="font-bold text-sm">Investasi</span>
-                <span class="text-xs opacity-80">Infaq & Shodaqoh</span>
-            </button>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-sky-500">
+                <p class="text-xs text-gray-500">Wajib (50)</p>
+                <p class="text-xl font-bold text-gray-800">${appState.points.wajib} <span class="text-sm font-normal">Poin</span></p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500">
+                <p class="text-xs text-gray-500">Sunnah (27)</p>
+                <p class="text-xl font-bold text-gray-800">${appState.points.sunnah} <span class="text-sm font-normal">Poin</span></p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                <p class="text-xs text-gray-500">Quran (13)</p>
+                <p class="text-xl font-bold text-gray-800">${appState.points.quran} <span class="text-sm font-normal">Poin</span></p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500">
+                <p class="text-xs text-gray-500">Infaq (10)</p>
+                <p class="text-xl font-bold text-gray-800">${appState.points.infaq} <span class="text-sm font-normal">Poin</span></p>
+            </div>
         </div>
     `;
+}
+
+export function updateDashboardUI() {
+    // Dipanggil saat poin berubah di tab lain
+    const isDashboardActive = document.querySelector('.nav-btn[data-tab="dashboard"]')?.classList.contains('text-sky-600');
+    if (isDashboardActive) {
+        renderDashboard();
+    }
 }
