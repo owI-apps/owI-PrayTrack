@@ -1,15 +1,19 @@
 import { renderDashboard, updateDashboardUI } from './modules/dashboard.js';
 
-// STATE APLIKASI GLOBAL
 const todayStr = new Date().toISOString().slice(0, 10);
 
 export let appState = {
     todayDate: todayStr,
     points: { wajib: 0, sunnah: 0, quran: 0, infaq: 0 },
-    yesterdayPoints: 0
+    yesterdayPoints: 0,
+    userName: 'Sobat',
+    darkMode: false,
+    lang: 'id',
+    // TAMBAHAN: Data Utang sekarang disimpan di sini biar nggak hilang
+    utangSholat: [{ sholat: 'Dzuhur', total: 30, lunas: 0 }],
+    utangPuasa: [{ keterangan: 'Puasa Ramadhan', total: 5, lunas: 0 }]
 };
 
-// Load state dari Local Storage
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
@@ -17,12 +21,17 @@ function loadState() {
         if (parsed.todayDate === todayStr) {
             appState = parsed;
         } else {
-            // Hari berganti, poin hari ini jadi poin kemarin, reset poin hari ini
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
+            appState.userName = parsed.userName || 'Sobat';
+            appState.darkMode = parsed.darkMode || false;
+            appState.lang = parsed.lang || 'id';
+            appState.utangSholat = parsed.utangSholat || [];
+            appState.utangPuasa = parsed.utangPuasa || [];
             saveState();
         }
     }
+    applyTheme();
 }
 
 export function saveState() {
@@ -32,7 +41,6 @@ export function saveState() {
 export function addPoint(type, amount) {
     appState.points[type] += amount;
     saveState();
-    // Update dashboard kalau lagi dibuka
     updateDashboardUI();
 }
 
@@ -42,12 +50,43 @@ export function subtractPoint(type, amount) {
     updateDashboardUI();
 }
 
-// Inisialisasi
-lucide.createIcons();
-loadState();
-renderDashboard();
+window.editProfile = function() {
+    const newName = prompt('Masukkan panggilan kamu:', appState.userName);
+    if (newName && newName.trim() !== '') {
+        appState.userName = newName.trim();
+        saveState();
+        updateDashboardUI();
+    }
+}
 
-// SIDEBAR LOGIC
+window.toggleTheme = function() {
+    appState.darkMode = !appState.darkMode;
+    saveState();
+    applyTheme();
+    updateDashboardUI(); // Refresh UI teks
+}
+
+function applyTheme() {
+    if (appState.darkMode) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
+
+window.toggleLang = function() {
+    appState.lang = appState.lang === 'id' ? 'en' : 'id';
+    saveState();
+    updateDashboardUI();
+}
+
+window.resetData = function() {
+    if(confirm('⚠️ Yakin mau reset SEMUA data poin dan utang?')) {
+        localStorage.removeItem('owi_state');
+        location.reload();
+    }
+}
+
 window.toggleSidebar = function() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -62,7 +101,6 @@ window.toggleSidebar = function() {
     }
 }
 
-// NAVIGASI BOTTOM BAR
 window.navigateTo = function(page) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('text-sky-600');
@@ -81,5 +119,6 @@ window.navigateTo = function(page) {
     });
 }
 
-window.toggleTheme = () => alert('Tema Gelap segera hadir!');
-window.resetData = () => { if(confirm('Yakin reset?')) { localStorage.clear(); location.reload(); } }
+lucide.createIcons();
+loadState();
+renderDashboard();
