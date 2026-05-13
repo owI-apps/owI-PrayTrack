@@ -4,18 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>owI PrayTrack</title>
+    <!-- Tambah darkMode: 'class' biar bisa toggle manual -->
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Animasi progress ring */
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.5s;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
+        .progress-ring__circle { transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        
+        /* INI RAHASIANYA: Override Dark Mode Global biar gampang */
+        html.dark body { background-color: #111827; color: #f3f4f6; }
+        html.dark .bg-white { background-color: #1f2937 !important; color: #f3f4f6; }
+        html.dark .bg-gray-100 { background-color: #111827 !important; }
+        html.dark .text-gray-800 { color: #f3f4f6; }
+        html.dark .text-gray-500 { color: #9ca3af; }
+        html.dark .text-gray-600 { color: #9ca3af; }
+        html.dark .border-gray-200 { border-color: #374151; }
+        html.dark .shadow-sm, html.dark .shadow { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3); }
+        html.dark input[type="number"], html.dark input[type="text"] { background-color: #374151; color: #f3f4f6; border-color: #4b5563; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -37,20 +47,42 @@
         <!-- KONTEN HALAMAN -->
         <main class="flex-1 overflow-y-auto hide-scrollbar p-4 pb-24" id="main-content"></main>
 
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR OVERLAY -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none z-20 transition-opacity duration-300" onclick="window.toggleSidebar()"></div>
+        
+        <!-- SIDEBAR -->
         <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-30 transform -translate-x-full transition-transform duration-300 flex flex-col">
             <div class="p-6 bg-sky-700 text-white">
                 <h2 class="text-xl font-bold">owI PrayTrack</h2>
-                <p class="text-sm opacity-80">Pengaturan & Info</p>
+                <p class="text-sm opacity-80" id="sidebar-subtitle">Pengaturan & Info</p>
             </div>
+            
             <div class="flex-1 overflow-y-auto p-4 space-y-2">
-                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700"><i data-lucide="user" class="w-5 h-5"></i> Profile</button>
-                <button onclick="window.toggleTheme()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700"><i data-lucide="moon" class="w-5 h-5"></i> Tema Gelap</button>
-                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700"><i data-lucide="globe" class="w-5 h-5"></i> Bahasa (ID/EN)</button>
+                <!-- Profile -->
+                <button onclick="window.editProfile()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700">
+                    <i data-lucide="user" class="w-5 h-5"></i> <span id="sidebar-profile-btn">Edit Nama</span>
+                </button>
+                
+                <!-- Tema -->
+                <button onclick="window.toggleTheme()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700">
+                    <i data-lucide="moon" class="w-5 h-5" id="theme-icon"></i> <span id="sidebar-theme-btn">Tema Gelap</span>
+                </button>
+                
+                <!-- Bahasa -->
+                <button onclick="window.toggleLang()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700">
+                    <i data-lucide="globe" class="w-5 h-5"></i> <span id="sidebar-lang-btn">Bahasa: Indonesia</span>
+                </button>
+                
                 <hr class="my-3">
-                <button onclick="window.resetData()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i> Reset Data</button>
+                
+                <!-- Reset -->
+                <button onclick="window.resetData()" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 text-red-500">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i> Reset Data
+                </button>
+                
                 <hr class="my-3">
+                
+                <!-- Trakteer -->
                 <a href="https://trakteer.id/owi_apps/gift" target="_blank" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 text-orange-500 font-semibold">
                     <i data-lucide="heart" class="w-5 h-5"></i> Dukung App Kami
                 </a>
