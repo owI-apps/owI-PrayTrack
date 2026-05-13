@@ -1,6 +1,4 @@
-import { appState } from '../app.js'; // Import buat cek tema nanti kalau perlu
-let utangSholat = [];
-let utangPuasa = [];
+import { appState, saveState } from '../app.js';
 
 export default function renderUtang() {
     const main = document.getElementById('main-content');
@@ -11,7 +9,6 @@ export default function renderUtang() {
             <p class="text-sm text-gray-500 mb-4">📅 ${today}</p>
             <h2 class="text-xl font-bold mb-4 text-gray-800">Utang Ibadah</h2>
             
-            <!-- KALKULATOR TAKSIRAN -->
             <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4">
                 <h3 class="font-bold text-orange-700 mb-2 flex items-center gap-2"><i data-lucide="calculator" class="w-5 h-5"></i> Kalkulator Utang Lupa</h3>
                 <p class="text-xs text-gray-600 mb-3">Estimasi utang karena lupa sejak baligh.</p>
@@ -38,7 +35,6 @@ export default function renderUtang() {
 
                 <button onclick="window.hitungLupa()" class="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold text-sm">Hitung Taksiran</button>
                 
-                <!-- HASIL KALKULASI (AWALNYA HIDDEN) -->
                 <div id="calc-result" class="hidden mt-4 bg-white p-3 rounded-lg border border-orange-300">
                     <p class="font-bold text-gray-800 mb-2 text-sm">Hasil Taksiran:</p>
                     <div id="calc-breakdown" class="text-xs text-gray-600 space-y-1"></div>
@@ -46,9 +42,9 @@ export default function renderUtang() {
                 </div>
             </div>
 
-            <h3 class="font-semibold text-gray-600 mb-2 mt-4">Daftar Utang Sholat</h3>
-            ${utangSholat.length === 0 ? '<p class="text-sm text-gray-400 text-center py-2">Belum ada utang dicatat</p>' : ''}
-            ${utangSholat.map((u, i) => `
+            <h3 class="font-semibold text-gray-600 mb-2 mt-4">Utang Sholat</h3>
+            ${appState.utangSholat.length === 0 ? '<p class="text-sm text-gray-400 text-center py-2">Alhamdulillah, tidak ada catatan utang sholat.</p>' : ''}
+            ${appState.utangSholat.map((u, i) => `
                 <div class="bg-white rounded-xl shadow p-4 mb-3">
                     <div class="flex justify-between items-center mb-2">
                         <h4 class="font-semibold text-gray-800">${u.sholat}</h4>
@@ -64,9 +60,9 @@ export default function renderUtang() {
                 </div>
             `).join('')}
 
-            <h3 class="font-semibold text-gray-600 mb-2 mt-4">Daftar Utang Puasa</h3>
-            ${utangPuasa.length === 0 ? '<p class="text-sm text-gray-400 text-center py-2">Belum ada utang dicatat</p>' : ''}
-            ${utangPuasa.map((u, i) => `
+            <h3 class="font-semibold text-gray-600 mb-2 mt-4">Utang Puasa</h3>
+            ${appState.utangPuasa.length === 0 ? '<p class="text-sm text-gray-400 text-center py-2">Alhamdulillah, tidak ada catatan utang puasa.</p>' : ''}
+            ${appState.utangPuasa.map((u, i) => `
                 <div class="bg-white rounded-xl shadow p-4 mb-3">
                     <div class="flex justify-between items-center mb-2">
                         <h4 class="font-semibold text-gray-800">${u.keterangan}</h4>
@@ -85,7 +81,6 @@ export default function renderUtang() {
         lucide.createIcons();
     }
 
-    // LOGIKA KALKULATOR
     window.hitungLupa = () => {
         const baligh = parseInt(document.getElementById('calc-baligh').value);
         const sekarang = parseInt(document.getElementById('calc-sekarang').value);
@@ -93,7 +88,6 @@ export default function renderUtang() {
         if(sekarang <= baligh) { alert('Umur sekarang harus lebih tua dari umur baligh!'); return; }
 
         const totalBulan = (sekarang - baligh) * 12;
-        
         const bolos = {
             'Subuh': parseInt(document.getElementById('calc-subuh').value) || 0,
             'Dzuhur': parseInt(document.getElementById('calc-dzuhur').value) || 0,
@@ -114,15 +108,11 @@ export default function renderUtang() {
             }
         });
 
-        if(!adaUtang) {
-            htmlBreakdown = "<p>Tidak ada utang taksiran.</p>";
-        }
-
+        if(!adaUtang) { htmlBreakdown = "<p>Tidak ada utang taksiran.</p>"; }
         breakdownEl.innerHTML = htmlBreakdown;
         document.getElementById('calc-result').classList.remove('hidden');
     }
 
-    // SIMPAN TAKSIRAN KE LIST (BARU AKUMULASI KALAU USER YAKIN)
     window.simpanTaksiran = () => {
         const baligh = parseInt(document.getElementById('calc-baligh').value);
         const sekarang = parseInt(document.getElementById('calc-sekarang').value);
@@ -139,42 +129,52 @@ export default function renderUtang() {
         Object.keys(bolos).forEach(sholat => {
             if(bolos[sholat] > 0) {
                 const totalUtang = totalBulan * bolos[sholat];
-                const existing = utangSholat.find(u => u.sholat === sholat);
+                const existing = appState.utangSholat.find(u => u.sholat === sholat);
                 if(existing) {
-                    existing.total += totalUtang; // Kalau udah ada, baru ditambah
+                    existing.total += totalUtang;
                 } else {
-                    utangSholat.push({ sholat: sholat, total: totalUtang, lunas: 0 });
+                    appState.utangSholat.push({ sholat: sholat, total: totalUtang, lunas: 0 });
                 }
             }
         });
-
-        renderList(); // Refresh list
+        saveState();
+        renderList();
     }
 
     window.editUtangSholat = (index) => {
-        const newTotal = prompt(`Edit total utang ${utangSholat[index].sholat}:`, utangSholat[index].total);
+        const newTotal = prompt(`Edit total utang ${appState.utangSholat[index].sholat}:`, appState.utangSholat[index].total);
         if (newTotal !== null && !isNaN(parseInt(newTotal))) {
-            utangSholat[index].total = parseInt(newTotal);
-            if(utangSholat[index].lunas > utangSholat[index].total) utangSholat[index].lunas = utangSholat[index].total;
+            appState.utangSholat[index].total = parseInt(newTotal);
+            if(appState.utangSholat[index].lunas > appState.utangSholat[index].total) appState.utangSholat[index].lunas = appState.utangSholat[index].total;
+            saveState();
             renderList();
         }
     }
 
     window.editUtangPuasa = (index) => {
-        const newTotal = prompt(`Edit total utang ${utangPuasa[index].keterangan} (dalam hari):`, utangPuasa[index].total);
+        const newTotal = prompt(`Edit total utang ${appState.utangPuasa[index].keterangan} (dalam hari):`, appState.utangPuasa[index].total);
         if (newTotal !== null && !isNaN(parseInt(newTotal))) {
-            utangPuasa[index].total = parseInt(newTotal);
-            if(utangPuasa[index].lunas > utangPuasa[index].total) utangPuasa[index].lunas = utangPuasa[index].total;
+            appState.utangPuasa[index].total = parseInt(newTotal);
+            if(appState.utangPuasa[index].lunas > appState.utangPuasa[index].total) appState.utangPuasa[index].lunas = appState.utangPuasa[index].total;
+            saveState();
             renderList();
         }
     }
 
     window.lunasiSholat = (index) => {
-        if (utangSholat[index].lunas < utangSholat[index].total) { utangSholat[index].lunas += 1; renderList(); }
+        if (appState.utangSholat[index].lunas < appState.utangSholat[index].total) { 
+            appState.utangSholat[index].lunas += 1; 
+            saveState();
+            renderList(); 
+        }
     }
 
     window.lunasiPuasa = (index) => {
-        if (utangPuasa[index].lunas < utangPuasa[index].total) { utangPuasa[index].lunas += 1; renderList(); }
+        if (appState.utangPuasa[index].lunas < appState.utangPuasa[index].total) { 
+            appState.utangPuasa[index].lunas += 1; 
+            saveState();
+            renderList(); 
+        }
     }
 
     renderList();
