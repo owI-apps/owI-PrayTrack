@@ -4,7 +4,7 @@ export function renderDashboard() {
     const main = document.getElementById('main-content');
     
     const totalPoin = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
-    const percentage = Math.min((totalPoin / 100) * 100, 100); // Maks 100
+    const percentage = Math.min((totalPoin / 100) * 100, 100);
     const yesterday = appState.yesterdayPoints;
 
     let statusMsg = "";
@@ -18,17 +18,25 @@ export function renderDashboard() {
     } else if (totalPoin === yesterday) {
         statusMsg = "➡️ Sama dengan kemarin.";
         statusColor = "text-gray-500";
+    } else if (yesterday === 0 && totalPoin === 0) {
+        statusMsg = "Mulai hari ini dengan istiqomah! 💪";
+        statusColor = "text-sky-600";
     } else {
         statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
         statusColor = "text-orange-500";
     }
 
-    // SVG Circle Logic (Radius 70, Keliling = 2 * PI * 70 = 439.8)
     const circumference = 439.8;
     const offset = circumference - (percentage / 100) * circumference;
 
     main.innerHTML = `
-        <div class="flex flex-col items-center mt-4 mb-8">
+        <div class="mb-6">
+            <!-- GANTI: Sekarang pakai appState.userName -->
+            <h2 class="text-xl font-bold text-gray-800">Assalamu'alaikum, ${appState.userName}!</h2>
+            <p class="text-gray-500 text-sm">Jangan lupa agendamu hari ini.</p>
+        </div>
+
+        <div class="flex flex-col items-center mt-2 mb-8">
             <div class="relative">
                 <svg class="w-48 h-48" viewBox="0 0 160 160">
                     <circle class="text-gray-200" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" stroke="currentColor"/>
@@ -65,7 +73,6 @@ export function renderDashboard() {
 }
 
 export function updateDashboardUI() {
-    // Dipanggil saat poin berubah di tab lain
     const isDashboardActive = document.querySelector('.nav-btn[data-tab="dashboard"]')?.classList.contains('text-sky-600');
     if (isDashboardActive) {
         renderDashboard();
