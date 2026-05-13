@@ -28,10 +28,13 @@ export function renderDashboard() {
 
     const circumference = 439.8;
     const offset = circumference - (percentage / 100) * circumference;
+    
+    // Format Tanggal Indonesia
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     main.innerHTML = `
         <div class="mb-6">
-            <!-- GANTI: Sekarang pakai appState.userName -->
+            <p class="text-sm text-gray-500 mb-1">📅 ${today}</p>
             <h2 class="text-xl font-bold text-gray-800">Assalamu'alaikum, ${appState.userName}!</h2>
             <p class="text-gray-500 text-sm">Jangan lupa agendamu hari ini.</p>
         </div>
