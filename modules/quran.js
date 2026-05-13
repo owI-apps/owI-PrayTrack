@@ -1,6 +1,6 @@
 import { addPoint } from '../app.js';
 let quranSurahs = [];
-let alreadyGotPoints = false; // Biar nggak ngumpul poin terus ngeklik simpan
+let alreadyGotPoints = false;
 
 export default async function renderQuran() {
     if(quranSurahs.length === 0) {
@@ -8,8 +8,11 @@ export default async function renderQuran() {
         quranSurahs = await response.json();
     }
 
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const main = document.getElementById('main-content');
+    
     main.innerHTML = `
+        <p class="text-sm text-gray-500 mb-4">📅 ${today}</p>
         <h2 class="text-xl font-bold mb-4 text-gray-800">Baca Al-Quran</h2>
         
         <div id="quran-lastread" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 mb-6 shadow-lg text-center hidden">
