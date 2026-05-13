@@ -4,9 +4,11 @@ let alreadyGotPoints = false;
 
 export default function renderInvestasi() {
     const main = document.getElementById('main-content');
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const totalInfaq = riwayatInfaq.reduce((sum, item) => sum + item.nominal, 0);
 
     main.innerHTML = `
+        <p class="text-sm text-gray-500 mb-4">📅 ${today}</p>
         <h2 class="text-xl font-bold mb-4 text-gray-800">Investasi Akhirat</h2>
         
         <div class="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl p-6 mb-6 shadow-lg text-center">
