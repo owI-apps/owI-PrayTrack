@@ -50,7 +50,7 @@ export function renderDashboard() {
             <h2 class="text-xl font-bold text-gray-800">Assalamu'alaikum, ${appState.userName}!</h2>
         </div>
 
-        <!-- PROGRESS POIN -->
+        <!-- 1. PROGRESS POIN (PALING ATAS) -->
         <div class="flex flex-col items-center mt-2 mb-6">
             <div class="relative">
                 <svg class="w-40 h-40" viewBox="0 0 160 160">
@@ -66,33 +66,8 @@ export function renderDashboard() {
             <p class="mt-3 font-semibold text-center text-sm ${statusColor}">${statusMsg}</p>
         </div>
 
-        <!-- KARTU UTANG (ONECLICK KE HALAMAN UTANG) -->
-        ${(sisaSholat > 0 || sisaPuasa > 0) ? `
-        <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-xl shadow-lg mb-4 text-left active:scale-[0.98] transition-transform">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4"></i> Sisa Utang Ibadah</h3>
-                <i data-lucide="chevron-right" class="w-5 h-5 opacity-70"></i>
-            </div>
-            <div class="flex gap-4 text-sm">
-                ${sisaSholat > 0 ? `<span>🕌 Qodho Sholat: <strong>${sisaSholat} waktu</strong></span>` : ''}
-                ${sisaPuasa > 0 ? `<span>🌙 Qodho Puasa: <strong>${sisaPuasa} hari</strong></span>` : ''}
-            </div>
-            <p class="text-xs opacity-80 mt-2">Klik untuk melunasi!</p>
-        </button>
-        ` : `
-        <div class="bg-green-50 border border-green-200 p-4 rounded-xl mb-4 text-center">
-            <p class="text-green-700 font-semibold text-sm">✅ Alhamdulillah, tidak ada catatan utang ibadah saat ini.</p>
-        </div>
-        `}
-
-        <!-- SARAN & MOTIVASI BERDASARKAN HADITS -->
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-            <h3 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Saran & Motivasi</h3>
-            <p class="text-xs text-amber-900 leading-relaxed">${randomSaran}</p>
-        </div>
-
-        <!-- RINGKASAN POIN (ONECLICK KE HALAMAN TERKAIT) -->
-        <div class="grid grid-cols-2 gap-3">
+        <!-- 2. DETAIL POIN (TOMBOL ONECLICK) -->
+        <div class="grid grid-cols-2 gap-3 mb-5">
             <button onclick="window.navigateTo('sholat')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-sky-500 text-left active:scale-95 transition-transform">
                 <p class="text-xs text-gray-500">Wajib (50)</p>
                 <p class="text-xl font-bold text-gray-800">${appState.points.wajib} <span class="text-sm font-normal">Poin</span></p>
@@ -109,6 +84,31 @@ export function renderDashboard() {
                 <p class="text-xs text-gray-500">Infaq (10)</p>
                 <p class="text-xl font-bold text-gray-800">${appState.points.infaq} <span class="text-sm font-normal">Poin</span></p>
             </button>
+        </div>
+
+        <!-- 3. KARTU UTANG (TENGAH) -->
+        ${(sisaSholat > 0 || sisaPuasa > 0) ? `
+        <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-xl shadow-lg mb-5 text-left active:scale-[0.98] transition-transform">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4"></i> Sisa Utang Ibadah</h3>
+                <i data-lucide="chevron-right" class="w-5 h-5 opacity-70"></i>
+            </div>
+            <div class="flex gap-4 text-sm">
+                ${sisaSholat > 0 ? `<span>🕌 Qodho Sholat: <strong>${sisaSholat} waktu</strong></span>` : ''}
+                ${sisaPuasa > 0 ? `<span>🌙 Qodho Puasa: <strong>${sisaPuasa} hari</strong></span>` : ''}
+            </div>
+            <p class="text-xs opacity-80 mt-2">Klik untuk melunasi!</p>
+        </button>
+        ` : `
+        <div class="bg-green-50 border border-green-200 p-4 rounded-xl mb-5 text-center">
+            <p class="text-green-700 font-semibold text-sm">✅ Alhamdulillah, tidak ada catatan utang ibadah saat ini.</p>
+        </div>
+        `}
+
+        <!-- 4. SARAN & MOTIVASI (BAWAH) -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+            <h3 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Saran & Motivasi</h3>
+            <p class="text-xs text-amber-900 leading-relaxed">${randomSaran}</p>
         </div>
     `;
 }
