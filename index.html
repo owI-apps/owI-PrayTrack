@@ -20,7 +20,7 @@
         body { 
             -webkit-tap-highlight-color: transparent; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F0F4F8; /* Abu premium yang lebih kaya dari putih polos */
+            background-color: #F0F4F8;
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -29,72 +29,59 @@
         /* PREMIUM DARK MODE */
         html.dark body { background-color: #0B1120; color: #f8fafc; }
         html.dark .bg-white { background-color: #151F32 !important; color: #f8fafc; }
+        html.dark .bg-slate-50 { background-color: #0B1120 !important; } /* FIX BUG LATAR PUTIH */
         html.dark .text-slate-900 { color: #f8fafc; }
         html.dark .text-slate-500, html.dark .text-slate-600 { color: #64748B; }
         html.dark .border-slate-100 { border-color: #1E293B; }
         html.dark input, html.dark select { background-color: #1E293B; color: #f8fafc; border-color: #334155; }
         
-        /* HERO CARD GRADIENT (Deep Royal Blue) */
+        /* HERO CARD GRADIENT */
         .hero-card {
             background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
         .hero-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
+            content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;
         }
-        html.dark .hero-card {
-            background: linear-gradient(135deg, #172554 0%, #1E3A8A 100%);
-        }
+        html.dark .hero-card { background: linear-gradient(135deg, #172554 0%, #1E3A8A 100%); }
 
-        /* TRIPLE SHADOW PREMIUM (Kartu mengapung) */
+        /* TRIPLE SHADOW PREMIUM */
         .premium-card {
-            background-color: #FFFFFF;
-            border: 1px solid rgba(241, 245, 249, 0.8);
-            box-shadow: 
-                0 4px 6px -1px rgba(148, 163, 184, 0.05),
-                0 10px 15px -3px rgba(148, 163, 184, 0.08),
-                0 20px 25px -5px rgba(148, 163, 184, 0.06);
+            background-color: #FFFFFF; border: 1px solid rgba(241, 245, 249, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(148, 163, 184, 0.05), 0 10px 15px -3px rgba(148, 163, 184, 0.08), 0 20px 25px -5px rgba(148, 163, 184, 0.06);
         }
         html.dark .premium-card {
-            background-color: #151F32;
-            border: 1px solid rgba(30, 41, 59, 0.8);
+            background-color: #151F32; border: 1px solid rgba(30, 41, 59, 0.8);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
-        /* KARTU MOTIVASI (Metallic Gold Hint) */
+        /* KARTU MOTIVASI HIJAU MATCHA (KONTRAS TINGGI) */
         .motivation-card {
-            background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);
-            border-left: 4px solid #D97706;
-            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.08);
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); /* Matcha Green Soft */
+            border-left: 5px solid #2E7D32; /* Dark Green Border biar tegas */
+            box-shadow: 0 4px 14px rgba(46, 125, 50, 0.1);
         }
         html.dark .motivation-card {
-            background: linear-gradient(180deg, #1C1917 0%, #151F32 100%);
-            border-left: 4px solid #F59E0B;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.05);
+            background: linear-gradient(135deg, #1B3A1D 0%, #1A2E1C 100%); /* Dark Matcha */
+            border-left: 5px solid #66BB6A;
+            box-shadow: 0 4px 14px rgba(102, 187, 106, 0.08);
         }
     </style>
 </head>
 <body class="font-sans">
 
-    <!-- WRAPPER UTAMA -->
-    <div class="max-w-md mx-auto bg-slate-50 min-h-screen flex flex-col relative overflow-hidden">
+    <!-- WRAPPER UTAMA (Ditambah dark:bg-[#0B1120] biar nggak putih saat dark mode) -->
+    <div class="max-w-md mx-auto bg-slate-50 dark:bg-[#0B1120] min-h-screen flex flex-col relative overflow-hidden">
         
         <!-- HEADER PREMIUM -->
-        <header class="bg-white/90 backdrop-blur-lg border-b border-slate-100/50 p-4 flex items-center sticky top-0 z-10">
+        <header class="bg-white/90 dark:bg-[#151F32]/90 backdrop-blur-lg border-b border-slate-100 dark:border-slate-800 p-4 flex items-center sticky top-0 z-10">
             <div onclick="window.toggleSidebar()" class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center text-white mr-3 cursor-pointer active:scale-95 transition-transform shadow-lg shadow-blue-500/30 overflow-hidden">
                 <img src="" alt="Logo" class="w-full h-full object-cover hidden" id="app-logo">
                 <span id="logo-placeholder" class="font-black text-sm">owI</span>
             </div>
             <div>
-                <h1 class="text-2xl font-extrabold text-slate-900 leading-none tracking-tight">owI <span class="text-blue-600">PrayTrack</span></h1>
+                <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white leading-none tracking-tight">owI <span class="text-blue-600 dark:text-blue-400">PrayTrack</span></h1>
             </div>
         </header>
 
@@ -105,55 +92,55 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none z-20 transition-opacity duration-300" onclick="window.toggleSidebar()"></div>
         
         <!-- SIDEBAR PREMIUM -->
-        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-30 transform -translate-x-full transition-transform duration-300 flex flex-col rounded-r-3xl">
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-[#151F32] shadow-2xl z-30 transform -translate-x-full transition-transform duration-300 flex flex-col rounded-r-3xl">
             <div class="p-6 bg-gradient-to-br from-blue-800 to-blue-900 text-white rounded-br-3xl">
                 <h2 class="text-xl font-bold">owI PrayTrack</h2>
                 <p class="text-sm opacity-70 mt-1">Pengaturan & Info</p>
             </div>
             
             <div class="flex-1 overflow-y-auto p-4 space-y-1">
-                <button onclick="window.editProfile()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
-                    <i data-lucide="user" class="w-5 h-5 text-slate-400"></i> <span id="sidebar-profile-btn">Edit Nama</span>
+                <button onclick="window.editProfile()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors">
+                    <i data-lucide="user" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i> <span id="sidebar-profile-btn">Edit Nama</span>
                 </button>
                 
-                <button onclick="window.toggleTheme()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
-                    <i data-lucide="moon" class="w-5 h-5 text-slate-400"></i> <span id="sidebar-theme-btn">Tema Gelap</span>
+                <button onclick="window.toggleTheme()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors">
+                    <i data-lucide="moon" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i> <span id="sidebar-theme-btn">Tema Gelap</span>
                 </button>
                 
-                <button onclick="window.toggleLang()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
-                    <i data-lucide="globe" class="w-5 h-5 text-slate-400"></i> <span id="sidebar-lang-btn">Bahasa: Indonesia</span>
+                <button onclick="window.toggleLang()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors">
+                    <i data-lucide="globe" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i> <span id="sidebar-lang-btn">Bahasa: Indonesia</span>
                 </button>
                 
-                <div class="py-2"><hr class="border-slate-100"></div>
+                <div class="py-2"><hr class="border-slate-100 dark:border-slate-700"></div>
                 
-                <button onclick="window.resetData()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-red-500 transition-colors">
+                <button onclick="window.resetData()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors">
                     <i data-lucide="trash-2" class="w-5 h-5"></i> Reset Data
                 </button>
                 
-                <div class="py-2"><hr class="border-slate-100"></div>
+                <div class="py-2"><hr class="border-slate-100 dark:border-slate-700"></div>
                 
-                <a href="https://trakteer.id/owi_apps/gift" target="_blank" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 text-amber-600 font-semibold transition-colors">
+                <a href="https://trakteer.id/owi_apps/gift" target="_blank" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600 font-semibold transition-colors">
                     <i data-lucide="heart" class="w-5 h-5"></i> Dukung App Kami
                 </a>
             </div>
         </div>
 
-        <!-- BOTTOM NAVBAR PREMIUM (Tidak pakai border, pakai shadow mengapung) -->
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 backdrop-blur-xl pt-2 pb-4 px-4 z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <!-- BOTTOM NAVBAR PREMIUM -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 dark:bg-[#151F32]/80 backdrop-blur-xl pt-2 pb-4 px-4 z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
             <div class="flex justify-around">
-                <button onclick="window.navigateTo('dashboard')" class="nav-btn flex flex-col items-center text-xs text-blue-600 pt-1" data-tab="dashboard">
+                <button onclick="window.navigateTo('dashboard')" class="nav-btn flex flex-col items-center text-xs text-blue-600 dark:text-blue-400 pt-1" data-tab="dashboard">
                     <i data-lucide="layout-dashboard" class="w-6 h-6"></i><span class="font-bold mt-1">Home</span>
                 </button>
-                <button onclick="window.navigateTo('sholat')" class="nav-btn flex flex-col items-center text-xs text-slate-400 pt-1" data-tab="sholat">
+                <button onclick="window.navigateTo('sholat')" class="nav-btn flex flex-col items-center text-xs text-slate-400 dark:text-slate-500 pt-1" data-tab="sholat">
                     <i data-lucide="check-circle" class="w-6 h-6"></i><span class="mt-1">Sholat</span>
                 </button>
-                <button onclick="window.navigateTo('quran')" class="nav-btn flex flex-col items-center text-xs text-slate-400 pt-1" data-tab="quran">
+                <button onclick="window.navigateTo('quran')" class="nav-btn flex flex-col items-center text-xs text-slate-400 dark:text-slate-500 pt-1" data-tab="quran">
                     <i data-lucide="book-open" class="w-6 h-6"></i><span class="mt-1">Quran</span>
                 </button>
-                <button onclick="window.navigateTo('utang')" class="nav-btn flex flex-col items-center text-xs text-slate-400 pt-1" data-tab="utang">
+                <button onclick="window.navigateTo('utang')" class="nav-btn flex flex-col items-center text-xs text-slate-400 dark:text-slate-500 pt-1" data-tab="utang">
                     <i data-lucide="clock" class="w-6 h-6"></i><span class="mt-1">Utang</span>
                 </button>
-                <button onclick="window.navigateTo('amalJariyah')" class="nav-btn flex flex-col items-center text-xs text-slate-400 pt-1" data-tab="amalJariyah">
+                <button onclick="window.navigateTo('amalJariyah')" class="nav-btn flex flex-col items-center text-xs text-slate-400 dark:text-slate-500 pt-1" data-tab="amalJariyah">
                     <i data-lucide="heart-handshake" class="w-6 h-6"></i><span class="mt-1">Amal</span>
                 </button>
             </div>
