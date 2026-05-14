@@ -25,16 +25,45 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .progress-ring__circle { transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
 
-        /* HERO CARD GRADIENT (Terang & Gelap) */
+        /* HERO CARD GRADIENT */
         .hero-card-light { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); }
         .hero-card-dark { background: linear-gradient(135deg, #172554 0%, #1E3A8A 100%); border: 1px solid rgba(59, 130, 246, 0.3); }
 
-        /* PREMIUM CARD GLOW (Gelap) */
+        /* PREMIUM CARD GLOW */
         .card-glow { border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
         
         /* MATCHA CARD */
         .matcha-light { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left: 5px solid #047857; }
         .matcha-dark { background: linear-gradient(135deg, #022C22 0%, #064E3B 100%); border-left: 5px solid #34D399; box-shadow: 0 0 20px rgba(52, 211, 153, 0.1); }
+
+        /* ================================================== */
+        /* MAGIC DARK MODE CSS (FIX SEMUA HALAMAN NGEBLEND) */
+        /* ================================================== */
+        html.dark { background-color: #020617; color: #F8FAFC; }
+        
+        /* Fix Latar Belakang */
+        html.dark .bg-white { background-color: #0F172A !important; color: #F8FAFC; border-color: #1E293B; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        html.dark .bg-gray-50, html.dark .bg-gray-100 { background-color: #020617 !important; }
+        html.dark .bg-slate-50 { background-color: #020617 !important; }
+        
+        /* Fix Warna Teks Utama (Biar nggak hilang di latar gelap) */
+        html.dark .text-gray-800, html.dark .text-gray-700, html.dark .text-gray-900, html.dark .text-slate-900 { color: #F8FAFC !important; }
+        html.dark .text-gray-500, html.dark .text-gray-600, html.dark .text-slate-500 { color: #94A3B8 !important; }
+        html.dark .text-gray-400, html.dark .text-slate-400 { color: #64748B !important; }
+        
+        /* Fix Border */
+        html.dark .border-b, html.dark .border, html.dark .border-gray-200, html.dark .border-slate-200 { border-color: #334155 !important; }
+        
+        /* Fix Input & Select */
+        html.dark input, html.dark select { background-color: #1E293B !important; color: #F8FAFC !important; border-color: #475569 !important; }
+        
+        /* Fix Kotak Latar Khusus (Orange, Hijau, Ungu, Biru) biar nggak silau */
+        html.dark .bg-orange-50 { background-color: rgba(124, 45, 18, 0.2) !important; }
+        html.dark .bg-green-50 { background-color: rgba(20, 83, 45, 0.2) !important; }
+        html.dark .bg-sky-50 { background-color: rgba(12, 74, 110, 0.2) !important; }
+        html.dark .bg-purple-50 { background-color: rgba(88, 28, 135, 0.2) !important; }
+        html.dark .bg-amber-50 { background-color: rgba(120, 53, 15, 0.2) !important; }
+        html.dark .bg-blue-50 { background-color: rgba(30, 58, 138, 0.2) !important; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-[#020617] font-sans text-slate-900 dark:text-slate-50">
