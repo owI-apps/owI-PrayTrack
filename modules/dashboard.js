@@ -2,29 +2,19 @@ import { appState } from '../app.js';
 
 export function renderDashboard() {
     const main = document.getElementById('main-content');
+    const isDark = appState.darkMode; // Cek mode untuk custom class
     
     const totalPoin = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
     const percentage = Math.min((totalPoin / 100) * 100, 100);
     const yesterday = appState.yesterdayPoints;
 
     let statusMsg = "";
-    let statusColor = "text-white/80"; // Di dalam kartu biru, putih lembut
-    if (percentage === 100) {
-        statusMsg = "🔥 PERFECT! Kamu luar biasa hari ini!";
-        statusColor = "text-amber-300"; 
-    } else if (totalPoin === 0 && yesterday === 0) {
-        statusMsg = "Mulai hari ini dengan istiqomah! 💪";
-        statusColor = "text-sky-200";
-    } else if (totalPoin > yesterday) {
-        statusMsg = "⬆️ Lebih baik dari kemarin!";
-        statusColor = "text-sky-200";
-    } else if (totalPoin === yesterday) {
-        statusMsg = "➡️ Sama dengan kemarin.";
-        statusColor = "text-white/70";
-    } else {
-        statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
-        statusColor = "text-orange-300";
-    }
+    let statusColor = "text-white/80"; 
+    if (percentage === 100) { statusMsg = "🔥 PERFECT! Luar biasa!"; statusColor = "text-amber-300"; }
+    else if (totalPoin === 0 && yesterday === 0) { statusMsg = "Mulai hari ini dengan istiqomah! 💪"; statusColor = "text-sky-200"; }
+    else if (totalPoin > yesterday) { statusMsg = "⬆️ Lebih baik dari kemarin!"; statusColor = "text-sky-200"; }
+    else if (totalPoin === yesterday) { statusMsg = "➡️ Sama dengan kemarin."; statusColor = "text-white/60"; }
+    else { statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!"; statusColor = "text-orange-300"; }
 
     const circumference = 439.8;
     const offset = circumference - (percentage / 100) * circumference;
@@ -64,12 +54,13 @@ export function renderDashboard() {
         </div>
 
         <!-- HERO CARD PREMIUM -->
-        <div class="hero-card rounded-3xl p-6 mb-6 shadow-xl shadow-blue-600/20 relative z-10">
+        <div class="${isDark ? 'hero-card-dark' : 'hero-card-light'} rounded-3xl p-6 mb-6 shadow-xl relative z-10 overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20 blur-2xl"></div>
             <div class="flex flex-col items-center relative z-20">
                 <div class="relative">
                     <svg class="w-36 h-36" viewBox="0 0 160 160">
                         <circle class="text-white/10" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" stroke="currentColor"/>
-                        <circle class="text-amber-400 progress-ring__circle" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" 
+                        <circle class="text-amber-400 dark:text-blue-300 progress-ring__circle" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" 
                             stroke-linecap="round" stroke="currentColor" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -83,29 +74,29 @@ export function renderDashboard() {
 
         <!-- GRID POIN PREMIUM -->
         <div class="grid grid-cols-2 gap-4 mb-5">
-            <button onclick="window.navigateTo('sholat')" class="premium-card bg-white dark:bg-slate-800 p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
-                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/40 rounded-xl flex items-center justify-center mb-3">
+            <button onclick="window.navigateTo('sholat')" class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
+                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-3">
                     <i data-lucide="check-circle" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Wajib</p>
                 <p class="text-2xl font-black text-slate-900 dark:text-white mt-0.5">${appState.points.wajib} <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">/50</span></p>
             </button>
-            <button onclick="window.navigateTo('sholat')" class="premium-card bg-white dark:bg-slate-800 p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
-                <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center mb-3">
+            <button onclick="window.navigateTo('sholat')" class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
+                <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mb-3">
                     <i data-lucide="sun" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Sunnah</p>
                 <p class="text-2xl font-black text-slate-900 dark:text-white mt-0.5">${appState.points.sunnah} <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">/27</span></p>
             </button>
-            <button onclick="window.navigateTo('quran')" class="premium-card bg-white dark:bg-slate-800 p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
-                <div class="w-10 h-10 bg-sky-50 dark:bg-sky-900/40 rounded-xl flex items-center justify-center mb-3">
+            <button onclick="window.navigateTo('quran')" class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
+                <div class="w-10 h-10 bg-sky-50 dark:bg-sky-900/30 rounded-xl flex items-center justify-center mb-3">
                     <i data-lucide="book-open" class="w-5 h-5 text-sky-600 dark:text-sky-400"></i>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Quran</p>
                 <p class="text-2xl font-black text-slate-900 dark:text-white mt-0.5">${appState.points.quran} <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">/13</span></p>
             </button>
-            <button onclick="window.navigateTo('amalJariyah')" class="premium-card bg-white dark:bg-slate-800 p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
-                <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/40 rounded-xl flex items-center justify-center mb-3">
+            <button onclick="window.navigateTo('amalJariyah')" class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
+                <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-3">
                     <i data-lucide="heart-handshake" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Infaq</p>
@@ -115,8 +106,8 @@ export function renderDashboard() {
 
         <!-- KARTU UTANG -->
         ${(sisaSholat > 0 || sisaPuasa > 0) ? `
-        <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 text-white p-5 rounded-2xl shadow-lg shadow-orange-500/30 mb-6 text-left active:scale-[0.98] transition-transform relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+        <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 text-white p-5 rounded-2xl shadow-lg shadow-orange-500/20 dark:shadow-orange-500/30 mb-6 text-left active:scale-[0.98] transition-transform relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <h3 class="font-extrabold text-sm flex items-center gap-2 uppercase tracking-wider text-white"><i data-lucide="alert-circle" class="w-5 h-5"></i> Sisa Utang Ibadah</h3>
                 <i data-lucide="chevron-right" class="w-5 h-5 opacity-70"></i>
@@ -128,18 +119,18 @@ export function renderDashboard() {
             <p class="text-xs opacity-80 mt-3 font-semibold relative z-10 text-white">Klik di sini untuk melunasi!</p>
         </button>
         ` : `
-        <div class="premium-card bg-white dark:bg-slate-800 border-l-4 border-green-500 p-4 rounded-2xl mb-6 text-center">
+        <div class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} border-l-4 border-green-500 p-4 rounded-2xl mb-6 text-center">
             <p class="text-green-600 dark:text-green-400 font-bold text-sm">✅ Alhamdulillah, tidak ada catatan utang ibadah.</p>
         </div>
         `}
 
-        <!-- KARTU MOTIVASI MATCHA (KONTRAS HIJAU TUA & PUTIH) -->
-        <div class="motivation-card rounded-2xl p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-400/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
+        <!-- KARTU MOTIVASI MATCHA GLOW -->
+        <div class="${isDark ? 'matcha-dark' : 'matcha-light'} rounded-2xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-400/20 dark:bg-emerald-400/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
             <h3 class="font-extrabold text-sm text-emerald-900 dark:text-emerald-200 mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <i data-lucide="sparkles" class="w-4 h-4 text-emerald-700 dark:text-emerald-400"></i> Saran & Motivasi
             </h3>
-            <p class="text-sm text-emerald-950 dark:text-emerald-100 leading-relaxed font-medium">${randomSaran}</p>
+            <p class="text-sm text-emerald-950 dark:text-emerald-50 leading-relaxed font-medium">${randomSaran}</p>
         </div>
     `;
 }
