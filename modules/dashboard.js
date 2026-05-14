@@ -8,10 +8,10 @@ export function renderDashboard() {
     const yesterday = appState.yesterdayPoints;
 
     let statusMsg = "";
-    let statusColor = "text-white/70";
+    let statusColor = "text-white/80"; // Di dalam kartu biru, pakai putih lembut
     if (percentage === 100) {
         statusMsg = "🔥 PERFECT! Kamu luar biasa hari ini!";
-        statusColor = "text-amber-300";
+        statusColor = "text-amber-300"; // Emas terang di dasar biru
     } else if (totalPoin === 0 && yesterday === 0) {
         statusMsg = "Mulai hari ini dengan istiqomah! 💪";
         statusColor = "text-sky-200";
@@ -20,10 +20,10 @@ export function renderDashboard() {
         statusColor = "text-sky-200";
     } else if (totalPoin === yesterday) {
         statusMsg = "➡️ Sama dengan kemarin.";
-        statusColor = "text-white/60";
+        statusColor = "text-white/70";
     } else {
         statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
-        statusColor = "text-orange-300";
+        statusColor = "text-orange-300"; // Orange terang di dasar biru
     }
 
     const circumference = 439.8;
@@ -59,11 +59,12 @@ export function renderDashboard() {
 
     main.innerHTML = `
         <div class="mb-6">
-            <p class="text-xs text-slate-400 mb-1 uppercase tracking-widest font-bold">📅 ${today}</p>
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-1">Assalamu'alaikum, <span class="text-blue-600 dark:text-blue-400">${appState.userName}!</span></h2>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-widest font-bold">📅 ${today}</p>
+            <!-- TEKS ASSALAMU'ALAIKUM KONTRAS TINGGI -->
+            <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-1">Assalamu'alaikum, <span class="text-blue-600 dark:text-sky-400">${appState.userName}!</span></h2>
         </div>
 
-        <!-- HERO CARD PREMIUM (Kartu Utama Mengapung) -->
+        <!-- HERO CARD PREMIUM -->
         <div class="hero-card rounded-3xl p-6 mb-6 shadow-xl shadow-blue-600/20 relative z-10">
             <div class="flex flex-col items-center relative z-20">
                 <div class="relative">
@@ -81,7 +82,7 @@ export function renderDashboard() {
             </div>
         </div>
 
-        <!-- GRID POIN PREMIUM (Kapsul Ikon & Triple Shadow) -->
+        <!-- GRID POIN PREMIUM -->
         <div class="grid grid-cols-2 gap-4 mb-5">
             <button onclick="window.navigateTo('sholat')" class="premium-card p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
                 <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-3 shadow-sm">
@@ -113,7 +114,7 @@ export function renderDashboard() {
             </button>
         </div>
 
-        <!-- KARTU UTANG (Gradasi Orange yang kaya) -->
+        <!-- KARTU UTANG (Orange Kontras) -->
         ${(sisaSholat > 0 || sisaPuasa > 0) ? `
         <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 text-white p-5 rounded-2xl shadow-lg shadow-orange-500/30 mb-6 text-left active:scale-[0.98] transition-transform relative overflow-hidden">
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-10 -mt-10"></div>
@@ -133,13 +134,13 @@ export function renderDashboard() {
         </div>
         `}
 
-        <!-- KARTU MOTIVASI PREMIUM (Sentuhan Emas) -->
+        <!-- KARTU MOTIVASI MATCHA (HIJAU TUA KONTRAS) -->
         <div class="motivation-card rounded-2xl p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
-            <h3 class="font-extrabold text-sm text-slate-900 dark:text-white mb-3 flex items-center gap-2 uppercase tracking-wider">
-                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Saran & Motivasi
+            <div class="absolute top-0 right-0 w-20 h-20 bg-green-600/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+            <h3 class="font-extrabold text-sm text-green-950 dark:text-green-200 mb-3 flex items-center gap-2 uppercase tracking-wider">
+                <i data-lucide="sparkles" class="w-4 h-4 text-green-700 dark:text-green-400"></i> Saran & Motivasi
             </h3>
-            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${randomSaran}</p>
+            <p class="text-sm text-green-900 dark:text-green-100 leading-relaxed font-medium">${randomSaran}</p>
         </div>
     `;
 }
