@@ -2,7 +2,7 @@ import { appState } from '../app.js';
 
 export function renderDashboard() {
     const main = document.getElementById('main-content');
-    const isDark = appState.darkMode; // Cek mode untuk custom class
+    const isDark = appState.darkMode;
     
     const totalPoin = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
     const percentage = Math.min((totalPoin / 100) * 100, 100);
@@ -53,7 +53,7 @@ export function renderDashboard() {
             <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-1">Assalamu'alaikum, <span class="text-blue-600 dark:text-blue-400">${appState.userName}!</span></h2>
         </div>
 
-        <!-- HERO CARD PREMIUM -->
+        <!-- HERO CARD -->
         <div class="${isDark ? 'hero-card-dark' : 'hero-card-light'} rounded-3xl p-6 mb-6 shadow-xl relative z-10 overflow-hidden">
             <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20 blur-2xl"></div>
             <div class="flex flex-col items-center relative z-20">
@@ -72,7 +72,7 @@ export function renderDashboard() {
             </div>
         </div>
 
-        <!-- GRID POIN PREMIUM -->
+        <!-- GRID POIN -->
         <div class="grid grid-cols-2 gap-4 mb-5">
             <button onclick="window.navigateTo('sholat')" class="bg-white dark:bg-[#0F172A] ${isDark ? 'card-glow' : 'shadow-sm'} p-4 rounded-2xl text-left active:scale-[0.98] transition-transform">
                 <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-3">
@@ -124,7 +124,7 @@ export function renderDashboard() {
         </div>
         `}
 
-        <!-- KARTU MOTIVASI MATCHA GLOW -->
+        <!-- KARTU MOTIVASI MATCHA -->
         <div class="${isDark ? 'matcha-dark' : 'matcha-light'} rounded-2xl p-5 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-400/20 dark:bg-emerald-400/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
             <h3 class="font-extrabold text-sm text-emerald-900 dark:text-emerald-200 mb-3 flex items-center gap-2 uppercase tracking-wider">
