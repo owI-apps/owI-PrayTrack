@@ -2,7 +2,6 @@ import { renderDashboard } from './modules/dashboard.js';
 
 const todayStr = new Date().toISOString().slice(0, 10);
 
-// STATE GLOBAL
 export let appState = {
     todayDate: todayStr,
     points: { wajib: 0, sunnah: 0, quran: 0, infaq: 0 },
@@ -14,7 +13,6 @@ export let appState = {
     utangPuasa: []
 };
 
-// LOAD DATA DARI LOCAL STORAGE
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
@@ -22,7 +20,6 @@ function loadState() {
         if (parsed.todayDate === todayStr) {
             appState = parsed;
         } else {
-            // Hari berganti
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
@@ -33,7 +30,7 @@ function loadState() {
             saveState();
         }
     }
-    applyTheme();
+    applyTheme(); // PASTIKAN TEMA DIPASANG SAAT LOAD
 }
 
 export function saveState() {
@@ -50,34 +47,43 @@ export function subtractPoint(type, amount) {
     saveState();
 }
 
-// --- FUNGSI SIDEBAR & SETTINGS ---
-window.editProfile = function() {
-    const newName = prompt('Masukkan panggilan kamu:', appState.userName);
-    if (newName && newName.trim() !== '') {
-        appState.userName = newName.trim();
-        saveState();
-        renderDashboard(); // Langsung refresh dashboard
-    }
-}
-
-window.toggleTheme = function() {
-    appState.darkMode = !appState.darkMode;
-    saveState();
-    applyTheme();
-    renderDashboard();
-}
-
+// --- SISTEM TEMA ANTI ERROR ---
 function applyTheme() {
     if (appState.darkMode) {
         document.documentElement.classList.add('dark');
     } else {
         document.documentElement.classList.remove('dark');
     }
+    updateSidebarUI();
+}
+
+window.editProfile = function() {
+    const newName = prompt('Masukkan panggilan kamu:', appState.userName);
+    if (newName && newName.trim() !== '') {
+        appState.userName = newName.trim();
+        saveState();
+        renderDashboard();
+    }
+}
+
+window.toggleTheme = function() {
+    appState.darkMode = !appState.darkMode;
+    saveState();
+    applyTheme(); // PANGGIL LAGI SAAT DI KLIK
+    renderDashboard(); // RE-RENDER DASHBOARD BIAR ICON TEKS UPDATE
+}
+
+function updateSidebarUI() {
+    const themeBtn = document.getElementById('sidebar-theme-btn');
+    const langBtn = document.getElementById('sidebar-lang-btn');
+    if(themeBtn) themeBtn.textContent = appState.darkMode ? 'Tema Terang' : 'Tema Gelap';
+    if(langBtn) langBtn.textContent = appState.lang === 'id' ? 'Bahasa: Indonesia' : 'Language: English';
 }
 
 window.toggleLang = function() {
     appState.lang = appState.lang === 'id' ? 'en' : 'id';
     saveState();
+    updateSidebarUI();
 }
 
 window.resetData = function() {
@@ -93,36 +99,30 @@ window.toggleSidebar = function() {
     if (sidebar.classList.contains('-translate-x-full')) {
         sidebar.classList.remove('-translate-x-full');
         overlay.classList.remove('opacity-0', 'pointer-events-none');
-        overlay.classList.add('opacity-50', 'pointer-events-auto');
+        overlay.classList.add('opacity-100', 'pointer-events-auto');
     } else {
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('opacity-0', 'pointer-events-none');
-        overlay.classList.remove('opacity-50', 'pointer-events-auto');
+        overlay.classList.remove('opacity-100', 'pointer-events-auto');
     }
 }
 
-// --- NAVIGASI BOTTOM BAR (ANTI BLANK) ---
 window.navigateTo = function(page) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-sky-600');
-        btn.classList.add('text-gray-400');
+        btn.classList.remove('text-blue-600', 'dark:text-blue-400');
+        btn.classList.add('text-slate-400', 'dark:text-slate-500');
         if(btn.dataset.tab === page) {
-            btn.classList.remove('text-gray-400');
-            btn.classList.add('text-sky-600');
+            btn.classList.remove('text-slate-400', 'dark:text-slate-500');
+            btn.classList.add('text-blue-600', 'dark:text-blue-400');
         }
     });
 
     const main = document.getElementById('main-content');
     main.scrollTop = 0;
     
-    // Load modul dengan aman
     import(`./modules/${page}.js`)
         .then(module => {
-            if (module.default) {
-                module.default();
-            } else if (page === 'dashboard' && module.renderDashboard) {
-                module.renderDashboard();
-            }
+            if (module.default) module.default();
             lucide.createIcons();
         })
         .catch(err => {
@@ -133,4 +133,4 @@ window.navigateTo = function(page) {
 // INISIALISASI PERTAMA KALI
 lucide.createIcons();
 loadState();
-renderDashboard(); // Langsung render dashboard tanpa navigasi dulu
+renderDashboard();
