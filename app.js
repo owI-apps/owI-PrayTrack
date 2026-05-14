@@ -1,150 +1,110 @@
-import { appState, saveState } from './app.js'; // Ini buat export state
-
-// Biar app nggak blank kalau ada file hilang, kita pake dynamic import yang aman
-window.navigateTo = function(page) {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-sky-600');
-        btn.classList.add('text-gray-400');
-        if(btn.dataset.tab === page) {
-            btn.classList.remove('text-gray-400');
-            btn.classList.add('text-sky-600');
-        }
-    });
-
-    const main = document.getElementById('main-content');
-    main.scrollTop = 0;
-    
-    import(`./modules/${page}.js`)
-        .then(module => {
-            // Cek apakah modul punya default export atau named export
-            if (module.default) {
-                module.default();
-            } else if (page === 'dashboard' && module.renderDashboard) {
-                module.renderDashboard();
-            }
-            lucide.createIcons();
-        })
-        .catch(err => {
-            console.error("Gagal memuat halaman:", err);
-            main.innerHTML = `
-                <div class="p-6 text-center text-red-500">
-                    <h2 class="text-xl font-bold mb-2">Error Memuat Halaman</h2>
-                    <p class="text-sm">File <strong>modules/${page}.js</strong> tidak ditemukan atau ada error kode.</p>
-                    <p class="text-xs mt-4 text-gray-500">Pesan Error: ${err.message}</p>
-                </div>
-            `;
-        });
-}
-
-// --- STATE MANAGEMENT ---
-const todayStr = new Date().toISOString().slice(0, 10);
-
-export let appState = {
-    todayDate: todayStr,
-    points: { wajib: 0, sunnah: 0, quran: 0, infaq: 0 },
-    yesterdayPoints: 0,
-    userName: 'Sobat',
-    darkMode: false,
-    lang: 'id',
-    utangSholat: [],
-    utangPuasa: []
-};
-
-function loadState() {
+export function renderDashboard() {
+    // Ambil data langsung dari localStorage biar paling update
     const saved = localStorage.getItem('owi_state');
-    if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.todayDate === todayStr) {
-            appState = parsed;
-        } else {
-            const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
-            appState.yesterdayPoints = totalYesterday;
-            appState.userName = parsed.userName || 'Sobat';
-            appState.darkMode = parsed.darkMode || false;
-            appState.lang = parsed.lang || 'id';
-            appState.utangSholat = parsed.utangSholat || [];
-            appState.utangPuasa = parsed.utangPuasa || [];
-            saveState();
-        }
-    }
-    applyTheme();
-}
+    const state = saved ? JSON.parse(saved) : { points: { wajib:0, sunnah:0, quran:0, infaq:0 }, yesterdayPoints: 0, userName: 'Sobat', utangSholat: [], utangPuasa: [] };
+    
+    const main = document.getElementById('main-content');
+    
+    const totalPoin = state.points.wajib + state.points.sunnah + state.points.quran + state.points.infaq;
+    const percentage = Math.min((totalPoin / 100) * 100, 100);
+    const yesterday = state.yesterdayPoints;
 
-export function saveState() {
-    localStorage.setItem('owi_state', JSON.stringify(appState));
-}
-
-export function addPoint(type, amount) {
-    appState.points[type] += amount;
-    saveState();
-    // Update dashboard poin instan
-    const dashPoints = document.getElementById('dashboard-points');
-    if(dashPoints) {
-        const total = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
-        dashPoints.innerText = `${total}/100 Poin`;
-    }
-}
-
-export function subtractPoint(type, amount) {
-    if (appState.points[type] > 0) appState.points[type] -= amount;
-    saveState();
-    const dashPoints = document.getElementById('dashboard-points');
-    if(dashPoints) {
-        const total = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
-        dashPoints.innerText = `${total}/100 Poin`;
-    }
-}
-
-window.editProfile = function() {
-    const newName = prompt('Masukkan panggilan kamu:', appState.userName);
-    if (newName && newName.trim() !== '') {
-        appState.userName = newName.trim();
-        saveState();
-        window.navigateTo('dashboard'); // Auto refresh dashboard
-    }
-}
-
-window.toggleTheme = function() {
-    appState.darkMode = !appState.darkMode;
-    saveState();
-    applyTheme();
-}
-
-function applyTheme() {
-    if (appState.darkMode) {
-        document.documentElement.classList.add('dark');
+    let statusMsg = "";
+    let statusColor = "text-gray-500";
+    if (percentage === 100) {
+        statusMsg = "🔥 PERFECT! Kamu luar biasa hari ini!";
+        statusColor = "text-green-500";
+    } else if (totalPoin > yesterday) {
+        statusMsg = "⬆️ Lebih baik dari kemarin!";
+        statusColor = "text-sky-600";
+    } else if (totalPoin === yesterday) {
+        statusMsg = "↔️ Sama dengan kemarin.";
+        statusColor = "text-gray-500";
+    } else if (yesterday === 0 && totalPoin === 0) {
+        statusMsg = "Mulai hari ini dengan istiqomah! 💪";
+        statusColor = "text-sky-600";
     } else {
-        document.documentElement.classList.remove('dark');
+        statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
+        statusColor = "text-orange-500";
     }
-}
 
-window.toggleLang = function() {
-    appState.lang = appState.lang === 'id' ? 'en' : 'id';
-    saveState();
-}
+    const circumference = 439.8;
+    const offset = circumference - (percentage / 100) * circumference;
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-window.resetData = function() {
-    if(confirm('⚠️ Yakin mau reset SEMUA data poin dan utang?')) {
-        localStorage.removeItem('owi_state');
-        location.reload();
-    }
-}
+    const sisaSholat = state.utangSholat.reduce((sum, u) => sum + (u.total - u.lunas), 0);
+    const sisaPuasa = state.utangPuasa.reduce((sum, u) => sum + (u.total - u.lunas), 0);
 
-window.toggleSidebar = function() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
-        overlay.classList.add('opacity-50', 'pointer-events-auto');
-    } else {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-        overlay.classList.remove('opacity-50', 'pointer-events-auto');
-    }
-}
+    const saranList = [
+        "💡 <strong>Sunnah Qodho Subuh:</strong> Dianjurkan qodho Subuh dikerjakan sebelum sholat Subuh berjamaah, agar 'hutang' lunas sebelum 'tagihan' baru jatuh tempo.",
+        "💡 <strong>Utamakan Wajib:</strong> Jika punya qodho, jangan tinggalkan sholat wajib saat ini. Sholat wajib tetap wajib dikerjakan tepat waktu.",
+        "💡 <strong>Ganti Sunnah dengan Qodho:</strong> Ulama Syafi'iyyah menyarankan, jika punya utang sholat, gantilah sholat sunnah rawatib (selain Rawatib Subuh & Witir) dengan qodho. Hutang lebih prioritas!",
+        "💡 <strong>Sedikit tapi Istiqomah:</strong> 'Amal yang paling dicintai Allah adalah yang paling kecil tapi dilakukan terus-menerus.' (HR. Bukhari). Qodho 1 waktu sehari lebih utama daripada banyak tapi cuma sehari.",
+        "💡 <strong>Perbanyak Istighfar:</strong> Utang ibadah terjadi karena lupa atau malas. Perbanyak istighfar dan niat kuat, Allah akan permudah jalan pelunasannya."
+    ];
+    const randomSaran = saranList[Math.floor(Math.random() * saranList.length)];
 
-// INISIALISASI PERTAMA KALI
-lucide.createIcons();
-loadState();
-window.navigateTo('dashboard');
+    main.innerHTML = `
+        <div class="mb-5">
+            <p class="text-sm text-gray-500 mb-1">📅 ${today}</p>
+            <h2 class="text-xl font-bold text-gray-800">Assalamu'alaikum, ${state.userName}!</h2>
+        </div>
+
+        <div class="flex flex-col items-center mt-2 mb-6">
+            <div class="relative">
+                <svg class="w-40 h-40" viewBox="0 0 160 160">
+                    <circle class="text-gray-200" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" stroke="currentColor"/>
+                    <circle class="text-sky-500 progress-ring__circle" stroke-width="12" fill="transparent" r="70" cx="80" cy="80" 
+                        stroke-linecap="round" stroke="currentColor" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-3xl font-bold text-gray-800">${Math.round(percentage)}%</span>
+                    <span class="text-xs text-gray-500" id="dashboard-points">${totalPoin}/100 Poin</span>
+                </div>
+            </div>
+            <p class="mt-3 font-semibold text-center text-sm ${statusColor}">${statusMsg}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-5">
+            <button onclick="window.navigateTo('sholat')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-sky-500 text-left active:scale-95 transition-transform">
+                <p class="text-xs text-gray-500">Wajib (50)</p>
+                <p class="text-xl font-bold text-gray-800">${state.points.wajib} <span class="text-sm font-normal">Poin</span></p>
+            </button>
+            <button onclick="window.navigateTo('sholat')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500 text-left active:scale-95 transition-transform">
+                <p class="text-xs text-gray-500">Sunnah (27)</p>
+                <p class="text-xl font-bold text-gray-800">${state.points.sunnah} <span class="text-sm font-normal">Poin</span></p>
+            </button>
+            <button onclick="window.navigateTo('quran')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 text-left active:scale-95 transition-transform">
+                <p class="text-xs text-gray-500">Quran (13)</p>
+                <p class="text-xl font-bold text-gray-800">${state.points.quran} <span class="text-sm font-normal">Poin</span></p>
+            </button>
+            <button onclick="window.navigateTo('amalJariyah')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500 text-left active:scale-95 transition-transform">
+                <p class="text-xs text-gray-500">Infaq (10)</p>
+                <p class="text-xl font-bold text-gray-800">${state.points.infaq} <span class="text-sm font-normal">Poin</span></p>
+            </button>
+        </div>
+
+        ${(sisaSholat > 0 || sisaPuasa > 0) ? `
+        <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-xl shadow-lg mb-5 text-left active:scale-[0.98] transition-transform">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4"></i> Sisa Utang Ibadah</h3>
+                <i data-lucide="chevron-right" class="w-5 h-5 opacity-70"></i>
+            </div>
+            <div class="flex gap-4 text-sm">
+                ${sisaSholat > 0 ? `<span>🕌 Qodho Sholat: <strong>${sisaSholat} waktu</strong></span>` : ''}
+                ${sisaPuasa > 0 ? `<span>🌙 Qodho Puasa: <strong>${sisaPuasa} hari</strong></span>` : ''}
+            </div>
+            <p class="text-xs opacity-80 mt-2">Klik untuk melunasi!</p>
+        </button>
+        ` : `
+        <div class="bg-green-50 border border-green-200 p-4 rounded-xl mb-5 text-center">
+            <p class="text-green-700 font-semibold text-sm">✅ Alhamdulillah, tidak ada catatan utang ibadah saat ini.</p>
+        </div>
+        `}
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+            <h3 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Saran & Motivasi</h3>
+            <p class="text-xs text-amber-900 leading-relaxed">${randomSaran}</p>
+        </div>
+    `;
+}
