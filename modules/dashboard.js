@@ -7,21 +7,27 @@ export function renderDashboard() {
     const percentage = Math.min((totalPoin / 100) * 100, 100);
     const yesterday = appState.yesterdayPoints;
 
+    // PERBAIKAN URUTAN KONDISI DISINI
     let statusMsg = "";
     let statusColor = "text-gray-500";
+    
     if (percentage === 100) {
         statusMsg = "🔥 PERFECT! Kamu luar biasa hari ini!";
         statusColor = "text-green-500";
+    } else if (totalPoin === 0 && yesterday === 0) {
+        // 1. Cek kalau dua-duanya 0 dulu
+        statusMsg = "Mulai hari ini dengan istiqomah! 💪";
+        statusColor = "text-sky-600";
     } else if (totalPoin > yesterday) {
+        // 2. Baru cek lebih baik dari kemarin
         statusMsg = "⬆️ Lebih baik dari kemarin!";
         statusColor = "text-sky-600";
     } else if (totalPoin === yesterday) {
+        // 3. Cek sama dengan kemarin
         statusMsg = "➡️ Sama dengan kemarin.";
         statusColor = "text-gray-500";
-    } else if (yesterday === 0 && totalPoin === 0) {
-        statusMsg = "Mulai hari ini dengan istiqomah! 💪";
-        statusColor = "text-sky-600";
     } else {
+        // 4. Kurang dari kemarin
         statusMsg = "⬇️ Kurang dari kemarin, ayo kejar!";
         statusColor = "text-orange-500";
     }
@@ -30,11 +36,9 @@ export function renderDashboard() {
     const offset = circumference - (percentage / 100) * circumference;
     const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Hitung Sisa Utang
     const sisaSholat = appState.utangSholat.reduce((sum, u) => sum + (u.total - u.lunas), 0);
     const sisaPuasa = appState.utangPuasa.reduce((sum, u) => sum + (u.total - u.lunas), 0);
 
-    // Saran Motivasi Fiqh
     const saranList = [
         "💡 <strong>Sunnah Qodho Subuh:</strong> Dianjurkan qodho Subuh dikerjakan sebelum sholat Subuh berjamaah, agar 'hutang' lunas sebelum 'tagihan' baru jatuh tempo.",
         "💡 <strong>Utamakan Wajib:</strong> Jika punya qodho, jangan tinggalkan sholat wajib saat ini. Sholat wajib tetap wajib dikerjakan tepat waktu.",
@@ -50,7 +54,6 @@ export function renderDashboard() {
             <h2 class="text-xl font-bold text-gray-800">Assalamu'alaikum, ${appState.userName}!</h2>
         </div>
 
-        <!-- 1. PROGRESS POIN (PALING ATAS) -->
         <div class="flex flex-col items-center mt-2 mb-6">
             <div class="relative">
                 <svg class="w-40 h-40" viewBox="0 0 160 160">
@@ -66,7 +69,6 @@ export function renderDashboard() {
             <p class="mt-3 font-semibold text-center text-sm ${statusColor}">${statusMsg}</p>
         </div>
 
-        <!-- 2. DETAIL POIN (TOMBOL ONECLICK) -->
         <div class="grid grid-cols-2 gap-3 mb-5">
             <button onclick="window.navigateTo('sholat')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-sky-500 text-left active:scale-95 transition-transform">
                 <p class="text-xs text-gray-500">Wajib (50)</p>
@@ -86,7 +88,6 @@ export function renderDashboard() {
             </button>
         </div>
 
-        <!-- 3. KARTU UTANG (TENGAH) -->
         ${(sisaSholat > 0 || sisaPuasa > 0) ? `
         <button onclick="window.navigateTo('utang')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-xl shadow-lg mb-5 text-left active:scale-[0.98] transition-transform">
             <div class="flex justify-between items-center mb-2">
@@ -105,17 +106,9 @@ export function renderDashboard() {
         </div>
         `}
 
-        <!-- 4. SARAN & MOTIVASI (BAWAH) -->
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
             <h3 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Saran & Motivasi</h3>
             <p class="text-xs text-amber-900 leading-relaxed">${randomSaran}</p>
         </div>
     `;
-}
-
-export function updateDashboardUI() {
-    const isDashboardActive = document.querySelector('.nav-btn[data-tab="dashboard"]')?.classList.contains('text-sky-600');
-    if (isDashboardActive) {
-        renderDashboard();
-    }
 }
