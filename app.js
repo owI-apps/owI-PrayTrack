@@ -1,4 +1,8 @@
 import { renderDashboard, updateDashboardUI } from './modules/dashboard.js';
+import { renderSholat } from './modules/sholat.js';
+import { renderQuran } from './modules/quran.js';
+import { renderUtang } from './modules/utang.js';
+import { renderAmalJariyah } from './modules/amalJariyah.js';
 
 const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -9,7 +13,6 @@ export let appState = {
     userName: 'Sobat',
     darkMode: false,
     lang: 'id',
-    // TAMBAHAN: Data Utang sekarang disimpan di sini biar nggak hilang
     utangSholat: [{ sholat: 'Dzuhur', total: 30, lunas: 0 }],
     utangPuasa: [{ keterangan: 'Puasa Ramadhan', total: 5, lunas: 0 }]
 };
@@ -63,7 +66,7 @@ window.toggleTheme = function() {
     appState.darkMode = !appState.darkMode;
     saveState();
     applyTheme();
-    updateDashboardUI(); // Refresh UI teks
+    updateDashboardUI(); 
 }
 
 function applyTheme() {
@@ -101,6 +104,15 @@ window.toggleSidebar = function() {
     }
 }
 
+// FIX NAVIGASI: Pake pemetaan fungsi langsung biar instan tanpa reload file
+const pages = {
+    dashboard: renderDashboard,
+    sholat: renderSholat,
+    quran: renderQuran,
+    utang: renderUtang,
+    amalJariyah: renderAmalJariyah
+};
+
 window.navigateTo = function(page) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('text-sky-600');
@@ -113,10 +125,12 @@ window.navigateTo = function(page) {
 
     const main = document.getElementById('main-content');
     main.scrollTop = 0;
-    import(`./modules/${page}.js`).then(module => {
-        module.default();
+    
+    // Panggil fungsi render langsung dari memori
+    if (pages[page]) {
+        pages[page]();
         lucide.createIcons();
-    });
+    }
 }
 
 lucide.createIcons();
