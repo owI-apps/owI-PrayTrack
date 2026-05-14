@@ -1,9 +1,42 @@
-import { renderDashboard, updateDashboardUI } from './modules/dashboard.js';
-import { renderSholat } from './modules/sholat.js';
-import { renderQuran } from './modules/quran.js';
-import { renderUtang } from './modules/utang.js';
-import { renderAmalJariyah } from './modules/amalJariyah.js';
+import { appState, saveState } from './app.js'; // Ini buat export state
 
+// Biar app nggak blank kalau ada file hilang, kita pake dynamic import yang aman
+window.navigateTo = function(page) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-sky-600');
+        btn.classList.add('text-gray-400');
+        if(btn.dataset.tab === page) {
+            btn.classList.remove('text-gray-400');
+            btn.classList.add('text-sky-600');
+        }
+    });
+
+    const main = document.getElementById('main-content');
+    main.scrollTop = 0;
+    
+    import(`./modules/${page}.js`)
+        .then(module => {
+            // Cek apakah modul punya default export atau named export
+            if (module.default) {
+                module.default();
+            } else if (page === 'dashboard' && module.renderDashboard) {
+                module.renderDashboard();
+            }
+            lucide.createIcons();
+        })
+        .catch(err => {
+            console.error("Gagal memuat halaman:", err);
+            main.innerHTML = `
+                <div class="p-6 text-center text-red-500">
+                    <h2 class="text-xl font-bold mb-2">Error Memuat Halaman</h2>
+                    <p class="text-sm">File <strong>modules/${page}.js</strong> tidak ditemukan atau ada error kode.</p>
+                    <p class="text-xs mt-4 text-gray-500">Pesan Error: ${err.message}</p>
+                </div>
+            `;
+        });
+}
+
+// --- STATE MANAGEMENT ---
 const todayStr = new Date().toISOString().slice(0, 10);
 
 export let appState = {
@@ -13,8 +46,8 @@ export let appState = {
     userName: 'Sobat',
     darkMode: false,
     lang: 'id',
-    utangSholat: [{ sholat: 'Dzuhur', total: 30, lunas: 0 }],
-    utangPuasa: [{ keterangan: 'Puasa Ramadhan', total: 5, lunas: 0 }]
+    utangSholat: [],
+    utangPuasa: []
 };
 
 function loadState() {
@@ -44,13 +77,22 @@ export function saveState() {
 export function addPoint(type, amount) {
     appState.points[type] += amount;
     saveState();
-    updateDashboardUI();
+    // Update dashboard poin instan
+    const dashPoints = document.getElementById('dashboard-points');
+    if(dashPoints) {
+        const total = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
+        dashPoints.innerText = `${total}/100 Poin`;
+    }
 }
 
 export function subtractPoint(type, amount) {
     if (appState.points[type] > 0) appState.points[type] -= amount;
     saveState();
-    updateDashboardUI();
+    const dashPoints = document.getElementById('dashboard-points');
+    if(dashPoints) {
+        const total = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
+        dashPoints.innerText = `${total}/100 Poin`;
+    }
 }
 
 window.editProfile = function() {
@@ -58,7 +100,7 @@ window.editProfile = function() {
     if (newName && newName.trim() !== '') {
         appState.userName = newName.trim();
         saveState();
-        updateDashboardUI();
+        window.navigateTo('dashboard'); // Auto refresh dashboard
     }
 }
 
@@ -66,7 +108,6 @@ window.toggleTheme = function() {
     appState.darkMode = !appState.darkMode;
     saveState();
     applyTheme();
-    updateDashboardUI(); 
 }
 
 function applyTheme() {
@@ -80,7 +121,6 @@ function applyTheme() {
 window.toggleLang = function() {
     appState.lang = appState.lang === 'id' ? 'en' : 'id';
     saveState();
-    updateDashboardUI();
 }
 
 window.resetData = function() {
@@ -104,35 +144,7 @@ window.toggleSidebar = function() {
     }
 }
 
-// FIX NAVIGASI: Pake pemetaan fungsi langsung biar instan tanpa reload file
-const pages = {
-    dashboard: renderDashboard,
-    sholat: renderSholat,
-    quran: renderQuran,
-    utang: renderUtang,
-    amalJariyah: renderAmalJariyah
-};
-
-window.navigateTo = function(page) {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-sky-600');
-        btn.classList.add('text-gray-400');
-        if(btn.dataset.tab === page) {
-            btn.classList.remove('text-gray-400');
-            btn.classList.add('text-sky-600');
-        }
-    });
-
-    const main = document.getElementById('main-content');
-    main.scrollTop = 0;
-    
-    // Panggil fungsi render langsung dari memori
-    if (pages[page]) {
-        pages[page]();
-        lucide.createIcons();
-    }
-}
-
+// INISIALISASI PERTAMA KALI
 lucide.createIcons();
 loadState();
-renderDashboard();
+window.navigateTo('dashboard');
