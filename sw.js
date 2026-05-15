@@ -1,4 +1,4 @@
-const CACHE_NAME = 'owI PrayTrack';
+const CACHE_NAME = 'praytrack98-v2';
 const urlsToCache = [
   './',
   './index.html',
