@@ -83,8 +83,7 @@ window.toggleTheme = function() {
     appState.darkMode = !appState.darkMode;
     saveState();
     applyTheme();
-    // Re-render dashboard biar teks retro dan progress bar ikut ganti warna
-    window.navigateTo('dashboard'); 
+    renderDashboard(); 
 }
 
 // ==========================================
@@ -104,7 +103,7 @@ window.toggleSidebar = function() {
 }
 
 // ==========================================
-// SISTEM NAVIGASI (BOTTOM BAR) - FIX ONCLICK
+// SISTEM NAVIGASI (BOTTOM BAR)
 // ==========================================
 window.navigateTo = function(page) {
     // Update warna tombol navbar pake class CSS
@@ -151,7 +150,7 @@ window.editProfile = function() {
         appState.userName = newName.trim();
         saveState();
         updateUI();
-        window.navigateTo('dashboard'); 
+        renderDashboard(); 
     }
 }
 
@@ -176,5 +175,9 @@ if (typeof lucide !== 'undefined') {
 }
 loadState();
 
-// PENTING: Pakai navigateTo saat pertama kali load biar tombol Home langsung aktif
-window.navigateTo('dashboard');
+// 1. Render dashboard langsung tanpa navigateTo biar nggak blank
+renderDashboard(); 
+
+// 2. Pasang class nav-active ke tombol Home saat pertama kali buka
+const homeBtn = document.querySelector('.nav-btn[data-tab="dashboard"]');
+if(homeBtn) homeBtn.classList.add('nav-active');
