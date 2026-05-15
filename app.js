@@ -11,7 +11,8 @@ export let appState = {
     lang: 'id',
     utangSholat: [],
     utangPuasa: [],
-    quranLastRead: { surahName: '', ayah: 0 }
+    quranLastRead: { surahName: '', ayah: 0 },
+    checkedSholat: [] // TAMBAHAN: Nyimpen ceklis hari ini
 };
 
 // ==========================================
@@ -22,8 +23,10 @@ function loadState() {
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
+            // Masih hari yang sama, load semua data
             appState = parsed;
         } else {
+            // Hari berganti
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
@@ -32,6 +35,9 @@ function loadState() {
             appState.utangSholat = parsed.utangSholat || [];
             appState.utangPuasa = parsed.utangPuasa || [];
             appState.quranLastRead = parsed.quranLastRead || { surahName: '', ayah: 0 };
+            appState.checkedSholat = []; // RESET CEKLIS HARI INI JADI KOSONG
+            // Poin direset ke 0 karena hari baru
+            appState.points = { wajib: 0, sunnah: 0, quran: 0, infaq: 0 };
             saveState();
         }
     }
@@ -125,7 +131,7 @@ window.navigateTo = function(page) {
                     <div class="win98-titlebar" style="background: #800000;"><span>⚠️ 404_Error</span></div>
                     <div class="p-4">
                         <p>Halaman <b>${page}</b> tidak ditemukan!</p>
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan lu udah bikin folder modules dan masukin file js-nya di dalemnya, bukan di luar.</p>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan lu udah bikin folder modules dan masukin file js-nya di dalemnya.</p>
                     </div>
                 </div>
             `;
