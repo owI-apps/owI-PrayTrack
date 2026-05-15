@@ -176,5 +176,47 @@
         });
       }
     </script>
+        <!-- SERVICE WORKER REGISTRATION -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('✅ Service Worker terdaftar! Scope:', reg.scope))
+            .catch(err => console.error('❌ Gagal daftar Service Worker:', err));
+        });
+      }
+
+      // SCRIPT UNTUK TOMBOL INSTALL PWA
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); // Cegah banner otomatis browser
+        deferredPrompt = e; // Simpan eventnya
+        // Tampilkan tombol install yang tadi kita bikin hidden
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) installBtn.classList.remove('hidden');
+        console.log('👍 Aplikasi siap di-install!');
+      });
+
+      window.installApp = function() {
+        if (!deferredPrompt) {
+          alert('Aplikasi sudah di-install atau browser tidak mendukung PWA.');
+          return;
+        }
+        // Tampilkan prompt install bawaan browser
+        deferredPrompt.prompt();
+        // Tunggu user ngeklik
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User setuju install');
+          } else {
+            console.log('User batal install');
+          }
+          deferredPrompt = null; // Bersihin variabel
+          // Sembunyiin tombol lagi
+          const installBtn = document.getElementById('install-btn');
+          if (installBtn) installBtn.classList.add('hidden');
+        });
+      };
+    </script>
 </body>
 </html>
