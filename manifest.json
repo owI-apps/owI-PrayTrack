@@ -1,6 +1,6 @@
 {
-  "name": "owI PrayTrack 98",
-  "short_name": "PrayTrack98",
+  "name": "owI PrayTrack",
+  "short_name": "PrayTrack",
   "description": "Aplikasi Pelacak Ibadah & Taubat bergaya Windows 98",
   "start_url": "./index.html",
   "display": "standalone",
