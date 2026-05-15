@@ -1,11 +1,10 @@
-import { appState, saveState } from '../app.js';
+import { appState, saveState, addPoint, subtractPoint } from '../app.js'; // FIX: Import fungsi poin
 
 export default function renderSholat() {
     const main = document.getElementById('main-content');
     let viewDate = appState.todayDate; // Default hari ini
 
     const renderUI = () => {
-        // Ambil data history untuk tanggal yang sedang diliat
         const dayData = appState.sholatHistory[viewDate] || { wajib: {}, sunnah: [] };
         const wajibList = ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isya'];
         const sunnahList = [
@@ -32,7 +31,7 @@ export default function renderSholat() {
                         ${wajibList.map(x => `
                             <div class="flex items-center justify-between py-1 border-b border-gray-200 dark:border-gray-700">
                                 <span class="w-20 font-bold">${x}</span>
-                                <select data-name="${x}" class="wajih-status">
+                                <select data-name="${x}" class="wajib-status">
                                     <option value="">--Pilih--</option>
                                     <option value="jamaah" ${dayData.wajib[x]==='jamaah'?'selected':''}>Berjamaah</option>
                                     <option value="sendiri" ${dayData.wajib[x]==='sendiri'?'selected':''}>Sendiri</option>
@@ -55,59 +54,56 @@ export default function renderSholat() {
             </div>
         `;
 
-        // Event: Ganti Tanggal
         document.getElementById('datePicker').addEventListener('change', e => {
             viewDate = e.target.value;
-            renderUI(); // Re-render dengan data tanggal baru
+            renderUI(); 
         });
 
-        // Event: Wajib Select
-        document.querySelectorAll('.wajih-status').forEach(sel => {
+        document.querySelectorAll('.wajib-status').forEach(sel => {
             sel.addEventListener('change', e => {
                 const name = e.target.dataset.name;
                 const status = e.target.value;
-                if (!appState.sholatHistory[viewDate]) appState.sholatHistory[viewDate] = { wajib: {}, sunnah: [] };
+                const isToday = viewDate === appState.todayDate; // CEK APAKAH HARI INI
                 
+                if (!appState.sholatHistory[viewDate]) appState.sholatHistory[viewDate] = { wajib: {}, sunnah: [] };
                 const prevStatus = appState.sholatHistory[viewDate].wajib[name] || "";
                 appState.sholatHistory[viewDate].wajib[name] = status;
                 saveState();
 
-                // Hitung Poin
-                if (status === 'jamaah' || status === 'sendiri') {
-                    if (!prevStatus || prevStatus === 'tidak') addPoint('wajib', 10); // Dapat poin
-                } else {
-                    if (prevStatus === 'jamaah' || prevStatus === 'sendiri') subtractPoint('wajib', 10); // Hilang poin
+                // Hitung Poin (Hanya untuk hari ini)
+                if (isToday) {
+                    if (status === 'jamaah' || status === 'sendiri') {
+                        if (!prevStatus || prevStatus === 'tidak') addPoint('wajib', 10); 
+                    } else {
+                        if (prevStatus === 'jamaah' || prevStatus === 'sendiri') subtractPoint('wajib', 10); 
+                    }
                 }
 
-                // Logika Utang
-                if (status === 'tidak') {
-                    // Tambah Utang
+                // FIX UX: Logika Utang Cuma Jalan Kalau Di Tanggal Hari Ini
+                if (isToday && status === 'tidak') {
                     const existingDebt = appState.utangSholat.find(u => u.sholat === name);
                     if (existingDebt) { existingDebt.total += 1; } else { appState.utangSholat.push({ sholat: name, total: 1, lunas: 0 }); }
                     saveState();
                     alert(`⚠️ Utang sholat ${name} ditambahkan.`);
-                } else if (status === 'jamaah' || status === 'sendiri') {
-                    // Kalau sebelumnya "Tidak", batalkan utang di hari yang sama
-                    if (prevStatus === 'tidak') {
-                        const debt = appState.utangSholat.find(u => u.sholat === name);
-                        if (debt && debt.total > 0) { debt.total -= 1; if(debt.total===0) appState.utangSholat = appState.utangSholat.filter(u=>u.total>0); saveState(); alert(`✅ Utang ${name} dibatalkan.`); }
-                    }
+                } else if (isToday && (status === 'jamaah' || status === 'sendiri') && prevStatus === 'tidak') {
+                    const debt = appState.utangSholat.find(u => u.sholat === name);
+                    if (debt && debt.total > 0) { debt.total -= 1; if(debt.total===0) appState.utangSholat = appState.utangSholat.filter(u=>u.total>0); saveState(); alert(`✅ Utang ${name} dibatalkan.`); }
                 }
             });
         });
 
-        // Event: Sunnah Check
         document.querySelectorAll('.sunnah-check').forEach(cb => {
             cb.addEventListener('change', e => {
                 const name = e.target.dataset.name;
-                if (!appState.sholatHistory[viewDate]) appState.sholatHistory[viewDate] = { wajib: {}, sunnah: [] };
+                const isToday = viewDate === appState.todayDate;
                 
+                if (!appState.sholatHistory[viewDate]) appState.sholatHistory[viewDate] = { wajib: {}, sunnah: [] };
                 if (e.target.checked) {
                     appState.sholatHistory[viewDate].sunnah.push(name);
-                    addPoint('sunnah', 3);
+                    if (isToday) addPoint('sunnah', 3); // Poin cuma buat hari ini
                 } else {
                     appState.sholatHistory[viewDate].sunnah = appState.sholatHistory[viewDate].sunnah.filter(n => n !== name);
-                    subtractPoint('sunnah', 3);
+                    if (isToday) subtractPoint('sunnah', 3); // Poin cuma buat hari ini
                 }
                 saveState();
             });
