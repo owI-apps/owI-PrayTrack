@@ -11,6 +11,7 @@ export let appState = {
     lang: 'id',
     utangSholat: [],
     utangPuasa: []
+    quranLastRead: { surahName: '', ayah: 0 } // TAMBAHAN BARU: Nyimpen posisi tadarus
 };
 
 function loadState() {
@@ -27,6 +28,7 @@ function loadState() {
             appState.lang = parsed.lang || 'id';
             appState.utangSholat = parsed.utangSholat || [];
             appState.utangPuasa = parsed.utangPuasa || [];
+            appState.quranLastRead = parsed.quranLastRead || { surahName: '', ayah: 0 };
             saveState();
         }
     }
