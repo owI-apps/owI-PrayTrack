@@ -13,18 +13,13 @@ export let appState = {
     utangPuasa: []
 };
 
-// ==========================================
-// SISTEM SAVE & LOAD DATA
-// ==========================================
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
-            // Masih hari yang sama, load semua data
             appState = parsed;
         } else {
-            // Hari berganti, pindahin poin hari ini ke poin kemarin
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
@@ -42,9 +37,6 @@ export function saveState() {
     localStorage.setItem('owi_state', JSON.stringify(appState));
 }
 
-// ==========================================
-// SISTEM POIN
-// ==========================================
 export function addPoint(type, amount) {
     appState.points[type] += amount;
     saveState();
@@ -57,9 +49,6 @@ export function subtractPoint(type, amount) {
     saveState();
 }
 
-// ==========================================
-// SISTEM TEMA (WIN 98 HIGH CONTRAST)
-// ==========================================
 function applyTheme() {
     if (appState.darkMode) {
         document.documentElement.classList.add('dark');
@@ -72,30 +61,20 @@ function applyTheme() {
 function updateUI() {
     const themeBtn = document.getElementById('sidebar-theme-btn');
     const profileBtn = document.getElementById('sidebar-profile-btn');
-    
-    if (themeBtn) {
-        themeBtn.textContent = appState.darkMode ? '☀️ Tema Terang' : '🌙 Tema Gelap';
-    }
-    if (profileBtn) {
-        profileBtn.textContent = `👤 ${appState.userName}`;
-    }
+    if (themeBtn) themeBtn.textContent = appState.darkMode ? '☀️ Tema Terang' : '🌙 Tema Gelap';
+    if (profileBtn) profileBtn.textContent = `👤 ${appState.userName}`;
 }
 
 window.toggleTheme = function() {
     appState.darkMode = !appState.darkMode;
     saveState();
     applyTheme();
-    // Re-render dashboard biar teks retro dan progress bar ikut ganti warna
     renderDashboard(); 
 }
 
-// ==========================================
-// SISTEM SIDEBAR
-// ==========================================
 window.toggleSidebar = function() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    
     if (sidebar.classList.contains('-translate-x-full')) {
         sidebar.classList.remove('-translate-x-full');
         overlay.classList.remove('hidden');
@@ -105,62 +84,48 @@ window.toggleSidebar = function() {
     }
 }
 
-// ==========================================
-// SISTEM NAVIGASI (BOTTOM BAR)
-// ==========================================
 window.navigateTo = function(page) {
-    // Update warna tombol navbar pake class CSS
     document.querySelectorAll('.nav-btn').forEach(btn => {
         if (btn.dataset.tab === page) {
-            btn.classList.add('nav-active'); // Kasih efek ditekan
+            btn.classList.add('nav-active');
         } else {
-            btn.classList.remove('nav-active'); // Balikin ke biasa
+            btn.classList.remove('nav-active');
         }
     });
 
     const main = document.getElementById('main-content');
     main.scrollTop = 0;
     
-    // Load modul halaman
+    // BAGIAN INI YANG NGELOAD HALAMAN
     import(`./modules/${page}.js`)
         .then(module => {
             if (module.default) {
                 module.default();
             }
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
         })
         .catch(err => {
+            // KALO FOLDER MODULES SALAH, INI YANG MUNCUL
             main.innerHTML = `
-                <div class="win98-window mb-4">
-                    <div class="win98-titlebar" style="background: #800000;"><span>⚠️ System_Error</span></div>
+                <div class="win98-window m-4">
+                    <div class="win98-titlebar" style="background: #800000;"><span>⚠️ 404_Error</span></div>
                     <div class="p-4">
-                        <p>Halaman <b>${page}</b> tidak ditemukan.</p>
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan file modules/${page}.js ada di repo lu.</p>
+                        <p>File <b>modules/${page}.js</b> tidak ditemukan!</p>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan lu udah bikin folder modules dan masukin file js-nya di dalemnya, bukan di luar.</p>
                     </div>
                 </div>
             `;
+            console.error("Gagal load modul:", err);
         });
 }
 
-// ==========================================
-// FUNGSI LAINNYA
-// ==========================================
 window.editProfile = function() {
     const newName = prompt('Masukkan panggilan kamu:', appState.userName);
     if (newName && newName.trim() !== '') {
         appState.userName = newName.trim();
         saveState();
         updateUI();
-        renderDashboard(); // Update nama di CMD header
+        renderDashboard(); 
     }
-}
-
-window.toggleLang = function() {
-    appState.lang = appState.lang === 'id' ? 'en' : 'id';
-    saveState();
-    updateUI();
 }
 
 window.resetData = function() {
@@ -170,17 +135,12 @@ window.resetData = function() {
     }
 }
 
-// ==========================================
-// INISIALISASI PERTAMA KALI
-// ==========================================
-if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-}
+// INISIALISASI
 loadState();
-
-// 1. Render dashboard langsung tanpa navigateTo biar nggak blank
-renderDashboard(); 
-
-// 2. Pasang class nav-active ke tombol Home saat pertama kali buka
-const homeBtn = document.querySelector('.nav-btn[data-tab="dashboard"]');
-if(homeBtn) homeBtn.classList.add('nav-active');
+try {
+    renderDashboard(); 
+    const homeBtn = document.querySelector('.nav-btn[data-tab="dashboard"]');
+    if(homeBtn) homeBtn.classList.add('nav-active');
+} catch (e) {
+    console.error("Gagal render awal:", e);
+}
