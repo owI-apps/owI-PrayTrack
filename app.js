@@ -12,9 +12,12 @@ export let appState = {
     utangSholat: [],
     utangPuasa: [],
     quranLastRead: { surahName: '', ayah: 0 },
-    sholatLog: {} // TAMBAHAN: Nyimpen data harian { "2023-10-25": { wajib: {...}, sunnah: [...] } }
+    sholatLog: {}
 };
 
+// ==========================================
+// SISTEM SAVE & LOAD DATA
+// ==========================================
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
@@ -43,8 +46,7 @@ export function addPoint(type, amount) { appState.points[type] += amount; saveSt
 export function subtractPoint(type, amount) { if (appState.points[type] > 0) appState.points[type] -= amount; saveState(); }
 
 function applyTheme() {
-    if (appState.darkMode) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
+    document.documentElement.classList.toggle('dark', appState.darkMode);
     updateUI();
 }
 function updateUI() {
@@ -54,8 +56,8 @@ function updateUI() {
 }
 window.toggleTheme = function() { appState.darkMode = !appState.darkMode; saveState(); applyTheme(); renderDashboard(); }
 window.toggleSidebar = function() {
-    const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
-    s.classList.toggle('-translate-x-full'); o.classList.toggle('hidden');
+    document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    document.getElementById('sidebar-overlay').classList.toggle('hidden');
 }
 window.navigateTo = function(page) {
     document.querySelectorAll('.nav-btn').forEach(b => { b.classList.toggle('nav-active', b.dataset.tab === page); });
