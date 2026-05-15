@@ -14,8 +14,11 @@ function renderDashboard() {
     else statusMsg = "Kurang dari kemarin! ⬇️";
 
     const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
+    // Hitung Utang
     const sisaSholat = appState.utangSholat.reduce((s, u) => s + (u.total - u.lunas), 0);
     const sisaPuasa = appState.utangPuasa.reduce((s, u) => s + (u.total - u.lunas), 0);
+    const adaUtang = sisaSholat > 0 || sisaPuasa > 0;
 
     const saranList = [
         "💡 Qodho Subuh dikerjakan sebelum Subuh berjamaah.",
@@ -28,7 +31,6 @@ function renderDashboard() {
     ];
     const randomSaran = saranList[Math.floor(Math.random() * saranList.length)];
 
-    // Progress Bar Block Retro
     const filledBlocks = Math.round(pct / 10);
     const emptyBlocks = 10 - filledBlocks;
     const progressBar = `[${'█'.repeat(filledBlocks)}${'░'.repeat(emptyBlocks)}] ${Math.round(pct)}%`;
@@ -78,29 +80,43 @@ function renderDashboard() {
             </div>
         </div>
 
-        <!-- WINDOW UTANG -->
-        ${(sisaSholat > 0 || sisaPuasa > 0) ? `
+        <!-- WINDOW UTANG (POLESAN BARU) -->
         <button onclick="window.navigateTo('utang')" class="win98-window w-full text-left mb-4 block">
-            <div class="win98-titlebar" style="background: #800000;">
-                <span>⚠️ Warning_Utang.sys</span>
+            <div class="win98-titlebar" style="background: ${adaUtang ? '#800000' : '#008000'};">
+                <span>${adaUtang ? '⚠️ Warning_Utang.sys' : '✅ Status_Aman.doc'}</span>
             </div>
             <div class="p-4">
-                <p class="font-bold">Sisa Utang Ibadah:</p>
-                ${sisaSholat > 0 ? `<p>🕌 Sholat: ${sisaSholat} waktu</p>` : ''}
-                ${sisaPuasa > 0 ? `<p>🌙 Puasa: ${sisaPuasa} hari</p>` : ''}
-                <p class="mt-2 text-red-800 dark:text-red-400 font-bold">>> KLIK DISINI UNTUK MELUNASI <<</p>
+                ${adaUtang ? `
+                    <p class="font-bold mb-2">Sisa Utang Ibadah:</p>
+                    
+                    ${sisaSholat > 0 ? `
+                    <div class="mb-2">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>🕌 Sholat</span>
+                            <span class="font-bold">${sisaSholat} waktu</span>
+                        </div>
+                        <div class="w-full bg-gray-300 dark:bg-gray-800 h-2 border border-gray-400">
+                            <div class="bg-blue-800 dark:bg-blue-400 h-full" style="width: 0%"></div> <!-- Progress dihitung per item di halaman utang -->
+                        </div>
+                    </div>` : ''}
+                    
+                    ${sisaPuasa > 0 ? `
+                    <div class="mb-2">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>🌙 Puasa</span>
+                            <span class="font-bold">${sisaPuasa} hari</span>
+                        </div>
+                        <div class="w-full bg-gray-300 dark:bg-gray-800 h-2 border border-gray-400">
+                            <div class="bg-amber-700 dark:bg-amber-500 h-full" style="width: 0%"></div>
+                        </div>
+                    </div>` : ''}
+
+                    <p class="mt-3 text-red-800 dark:text-red-400 font-bold text-sm">>> KLIK DISINI UNTUK MELUNASI <<</p>
+                ` : `
+                    <p>Alhamdulillah, tidak ada catatan utang ibadah.</p>
+                `}
             </div>
         </button>
-        ` : `
-        <div class="win98-window mb-4">
-            <div class="win98-titlebar" style="background: #008000;">
-                <span>✅ Status_Aman.doc</span>
-            </div>
-            <div class="p-4">
-                <p>Alhamdulillah, tidak ada catatan utang ibadah.</p>
-            </div>
-        </div>
-        `}
 
         <!-- WINDOW MOTIVASI -->
         <div class="win98-window mb-4">
@@ -115,6 +131,5 @@ function renderDashboard() {
     `;
 }
 
-// EXPORT DUA-DUANYA BIAR NGGAK BENTROK SAMA APP.JS
 export default renderDashboard;
 export { renderDashboard };
