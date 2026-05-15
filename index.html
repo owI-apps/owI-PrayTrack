@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>owI PrayTrack 98</title>
+    
+    <!-- PWA CONFIG (WAJIB DI HEAD) -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000080"> <!-- Warna titlebar Android -->
-    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Biar bisa install di iPhone -->
+    <meta name="theme-color" content="#000080">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192x192.png"> <!-- Ikon iPhone -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
     
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
@@ -151,12 +153,14 @@
     </div>
 
     <script type="module" src="./app.js"></script>
-        <script>
+
+    <!-- SERVICE WORKER REGISTRATION (WAJIB DI ATAS PENUTUP BODY) -->
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker terdaftar!'))
-            .catch(err => console.log('Gagal daftar SW:', err));
+            .then(reg => console.log('✅ Service Worker terdaftar! Scope:', reg.scope))
+            .catch(err => console.error('❌ Gagal daftar Service Worker:', err));
         });
       }
     </script>
