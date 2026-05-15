@@ -21,8 +21,10 @@ function loadState() {
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
+            // Masih hari yang sama, load semua data
             appState = parsed;
         } else {
+            // Hari berganti, pindahin poin hari ini ke poin kemarin
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
@@ -83,6 +85,7 @@ window.toggleTheme = function() {
     appState.darkMode = !appState.darkMode;
     saveState();
     applyTheme();
+    // Re-render dashboard biar teks retro dan progress bar ikut ganti warna
     renderDashboard(); 
 }
 
@@ -150,7 +153,7 @@ window.editProfile = function() {
         appState.userName = newName.trim();
         saveState();
         updateUI();
-        renderDashboard(); 
+        renderDashboard(); // Update nama di CMD header
     }
 }
 
