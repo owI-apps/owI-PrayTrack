@@ -1,5 +1,6 @@
 import { appState, saveState, addPoint } from '../app.js';
-let qs = [], pts = false;
+
+let qs = []; // Cache data surat
 
 export default async function renderQuran() {
     if (qs.length === 0) {
@@ -13,8 +14,6 @@ export default async function renderQuran() {
     
     const main = document.getElementById('main-content');
     const t = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    
-    // Ambil data tersimpan
     const lastRead = appState.quranLastRead;
     
     main.innerHTML = `
@@ -26,7 +25,6 @@ export default async function renderQuran() {
             <div class="p-4">
                 <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">📅 ${t}</p>
                 
-                <!-- KARTU TADARUS (Data Tersimpan) -->
                 <div class="win98-window mb-4">
                     <div class="win98-titlebar" style="background: ${lastRead.surahName ? '#008000' : '#404040'};">
                         <span>📖 Kartu_Tadarus.sys</span>
@@ -43,7 +41,6 @@ export default async function renderQuran() {
                     </div>
                 </div>
 
-                <!-- FORM INPUT -->
                 <h3 class="font-bold mb-2">Update Posisi (+13 Poin)</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Pilih nama surat dan masukkan nomor ayat</p>
                 
@@ -77,13 +74,14 @@ window.saveQ = function() {
     
     ee.classList.add('hidden');
     
-    // Update state & simpan ke local storage
     appState.quranLastRead = { surahName: f.name, ayah: an };
-    saveState();
-
-    // Kasih poin (hanya sekali per buka halaman)
-    if (!pts) { addPoint('quran', 13); pts = true; }
     
-    // Re-render halaman biar Kartu Tadarus langsung update
+    // FIX POIN: Pakai state dari appState, bukan variabel module
+    if (!appState.quranClaimedToday) { 
+        addPoint('quran', 13); 
+        appState.quranClaimedToday = true; 
+    }
+    
+    saveState();
     renderQuran();
 };
