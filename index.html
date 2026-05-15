@@ -8,14 +8,17 @@
     <!-- PWA CONFIG -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000080">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
-    <script>tailwind.config = { darkMode: 'class' }</script>
+    <!-- FIX: Load Library Dulu, Baru Config -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
