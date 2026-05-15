@@ -10,10 +10,13 @@ export let appState = {
     darkMode: false,
     lang: 'id',
     utangSholat: [],
-    utangPuasa: []
-    quranLastRead: { surahName: '', ayah: 0 } // TAMBAHAN BARU: Nyimpen posisi tadarus
+    utangPuasa: [],
+    quranLastRead: { surahName: '', ayah: 0 }
 };
 
+// ==========================================
+// SISTEM SAVE & LOAD DATA
+// ==========================================
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
@@ -39,6 +42,9 @@ export function saveState() {
     localStorage.setItem('owi_state', JSON.stringify(appState));
 }
 
+// ==========================================
+// SISTEM POIN
+// ==========================================
 export function addPoint(type, amount) {
     appState.points[type] += amount;
     saveState();
@@ -51,6 +57,9 @@ export function subtractPoint(type, amount) {
     saveState();
 }
 
+// ==========================================
+// SISTEM TEMA (WIN 98 HIGH CONTRAST)
+// ==========================================
 function applyTheme() {
     if (appState.darkMode) {
         document.documentElement.classList.add('dark');
@@ -74,6 +83,9 @@ window.toggleTheme = function() {
     renderDashboard(); 
 }
 
+// ==========================================
+// SISTEM SIDEBAR
+// ==========================================
 window.toggleSidebar = function() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -86,6 +98,9 @@ window.toggleSidebar = function() {
     }
 }
 
+// ==========================================
+// SISTEM NAVIGASI (BOTTOM BAR)
+// ==========================================
 window.navigateTo = function(page) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         if (btn.dataset.tab === page) {
@@ -98,7 +113,6 @@ window.navigateTo = function(page) {
     const main = document.getElementById('main-content');
     main.scrollTop = 0;
     
-    // BAGIAN INI YANG NGELOAD HALAMAN
     import(`./modules/${page}.js`)
         .then(module => {
             if (module.default) {
@@ -106,12 +120,11 @@ window.navigateTo = function(page) {
             }
         })
         .catch(err => {
-            // KALO FOLDER MODULES SALAH, INI YANG MUNCUL
             main.innerHTML = `
                 <div class="win98-window m-4">
                     <div class="win98-titlebar" style="background: #800000;"><span>⚠️ 404_Error</span></div>
                     <div class="p-4">
-                        <p>File <b>modules/${page}.js</b> tidak ditemukan!</p>
+                        <p>Halaman <b>${page}</b> tidak ditemukan!</p>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan lu udah bikin folder modules dan masukin file js-nya di dalemnya, bukan di luar.</p>
                     </div>
                 </div>
@@ -120,6 +133,9 @@ window.navigateTo = function(page) {
         });
 }
 
+// ==========================================
+// FUNGSI LAINNYA
+// ==========================================
 window.editProfile = function() {
     const newName = prompt('Masukkan panggilan kamu:', appState.userName);
     if (newName && newName.trim() !== '') {
@@ -137,7 +153,9 @@ window.resetData = function() {
     }
 }
 
-// INISIALISASI
+// ==========================================
+// INISIALISASI PERTAMA KALI
+// ==========================================
 loadState();
 try {
     renderDashboard(); 
