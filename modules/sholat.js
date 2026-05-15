@@ -18,6 +18,9 @@ export default function renderSholat() {
         {n:"Ba'diyah Isya", t:'s'}
     ];
 
+    // Cek apa udah pernah dicentang hari ini
+    const checked = appState.checkedSholat || [];
+
     main.innerHTML = `
         <div class="win98-window mb-4">
             <div class="win98-titlebar">
@@ -32,7 +35,7 @@ export default function renderSholat() {
                     ${wajib.map(x => `
                         <label class="flex items-center justify-between py-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800">
                             <span>${x}</span>
-                            <input type="checkbox" data-type="wajib" data-name="${x}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
+                            <input type="checkbox" data-type="wajib" data-name="${x}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;" ${checked.includes(x) ? 'checked' : ''}>
                         </label>
                     `).join('')}
                 </div>
@@ -42,7 +45,7 @@ export default function renderSholat() {
                     ${sunnah.map(x => `
                         <label class="flex items-center justify-between py-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 ${x.t === 'd' ? 'font-bold text-green-800 dark:text-green-400' : ''}">
                             <span>${x.n}</span>
-                            <input type="checkbox" data-type="sunnah" data-name="${x.n}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
+                            <input type="checkbox" data-type="sunnah" data-name="${x.n}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;" ${checked.includes(x.n) ? 'checked' : ''}>
                         </label>
                     `).join('')}
                 </div>
@@ -57,13 +60,17 @@ export default function renderSholat() {
             const name = e.target.dataset.name;
             
             if (e.target.checked) {
-                // Kalau dicentang, dapet poin
+                // Kalau dicentang, dapet poin & simpan state
                 addPoint(type, type === 'wajib' ? 10 : 3);
+                appState.checkedSholat.push(name);
+                saveState();
             } else {
-                // Kalau di-uncheck, kurangi poin
+                // Kalau di-uncheck, kurangi poin & hapus state
                 subtractPoint(type, type === 'wajib' ? 10 : 3);
+                appState.checkedSholat = appState.checkedSholat.filter(item => item !== name);
+                saveState();
                 
-                // TAMBAHAN: Kalau Wajib di-uncheck, otomatis jadi utang
+                // Jika Wajib di-uncheck, masuk utang
                 if (type === 'wajib' && name) {
                     const existingDebt = appState.utangSholat.find(u => u.sholat === name);
                     if (existingDebt) {
