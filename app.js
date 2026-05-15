@@ -12,22 +12,17 @@ export let appState = {
     utangSholat: [],
     utangPuasa: [],
     quranLastRead: { surahName: '', ayah: 0 },
-    checkedSholat: [] // TAMBAHAN: Nyimpen ceklis hari ini
+    sholatLog: {} // TAMBAHAN: Nyimpen data harian { "2023-10-25": { wajib: {...}, sunnah: [...] } }
 };
 
-// ==========================================
-// SISTEM SAVE & LOAD DATA
-// ==========================================
 function loadState() {
     const saved = localStorage.getItem('owi_state');
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
-            // Masih hari yang sama, load semua data
             appState = parsed;
         } else {
-            // Hari berganti
-            const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
+            const totalYesterday = parsed.points.wajib + parsed.sunnah + parsed.quran + parsed.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
             appState.darkMode = parsed.darkMode || false;
@@ -35,8 +30,7 @@ function loadState() {
             appState.utangSholat = parsed.utangSholat || [];
             appState.utangPuasa = parsed.utangPuasa || [];
             appState.quranLastRead = parsed.quranLastRead || { surahName: '', ayah: 0 };
-            appState.checkedSholat = []; // RESET CEKLIS HARI INI JADI KOSONG
-            // Poin direset ke 0 karena hari baru
+            appState.sholatLog = parsed.sholatLog || {};
             appState.points = { wajib: 0, sunnah: 0, quran: 0, infaq: 0 };
             saveState();
         }
@@ -44,129 +38,32 @@ function loadState() {
     applyTheme();
 }
 
-export function saveState() {
-    localStorage.setItem('owi_state', JSON.stringify(appState));
-}
+export function saveState() { localStorage.setItem('owi_state', JSON.stringify(appState)); }
+export function addPoint(type, amount) { appState.points[type] += amount; saveState(); }
+export function subtractPoint(type, amount) { if (appState.points[type] > 0) appState.points[type] -= amount; saveState(); }
 
-// ==========================================
-// SISTEM POIN
-// ==========================================
-export function addPoint(type, amount) {
-    appState.points[type] += amount;
-    saveState();
-}
-
-export function subtractPoint(type, amount) {
-    if (appState.points[type] > 0) {
-        appState.points[type] -= amount;
-    }
-    saveState();
-}
-
-// ==========================================
-// SISTEM TEMA (WIN 98 HIGH CONTRAST)
-// ==========================================
 function applyTheme() {
-    if (appState.darkMode) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
+    if (appState.darkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
     updateUI();
 }
-
 function updateUI() {
-    const themeBtn = document.getElementById('sidebar-theme-btn');
-    const profileBtn = document.getElementById('sidebar-profile-btn');
-    if (themeBtn) themeBtn.textContent = appState.darkMode ? '☀️ Tema Terang' : '🌙 Tema Gelap';
-    if (profileBtn) profileBtn.textContent = `👤 ${appState.userName}`;
+    const t = document.getElementById('sidebar-theme-btn'), p = document.getElementById('sidebar-profile-btn');
+    if(t) t.textContent = appState.darkMode ? '☀️ Tema Terang' : '🌙 Tema Gelap';
+    if(p) p.textContent = `👤 ${appState.userName}`;
 }
-
-window.toggleTheme = function() {
-    appState.darkMode = !appState.darkMode;
-    saveState();
-    applyTheme();
-    renderDashboard(); 
-}
-
-// ==========================================
-// SISTEM SIDEBAR
-// ==========================================
+window.toggleTheme = function() { appState.darkMode = !appState.darkMode; saveState(); applyTheme(); renderDashboard(); }
 window.toggleSidebar = function() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-    } else {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    }
+    const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+    s.classList.toggle('-translate-x-full'); o.classList.toggle('hidden');
 }
-
-// ==========================================
-// SISTEM NAVIGASI (BOTTOM BAR)
-// ==========================================
 window.navigateTo = function(page) {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (btn.dataset.tab === page) {
-            btn.classList.add('nav-active');
-        } else {
-            btn.classList.remove('nav-active');
-        }
-    });
-
-    const main = document.getElementById('main-content');
-    main.scrollTop = 0;
-    
-    import(`./modules/${page}.js`)
-        .then(module => {
-            if (module.default) {
-                module.default();
-            }
-        })
-        .catch(err => {
-            main.innerHTML = `
-                <div class="win98-window m-4">
-                    <div class="win98-titlebar" style="background: #800000;"><span>⚠️ 404_Error</span></div>
-                    <div class="p-4">
-                        <p>Halaman <b>${page}</b> tidak ditemukan!</p>
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pastikan lu udah bikin folder modules dan masukin file js-nya di dalemnya.</p>
-                    </div>
-                </div>
-            `;
-            console.error("Gagal load modul:", err);
-        });
+    document.querySelectorAll('.nav-btn').forEach(b => { b.classList.toggle('nav-active', b.dataset.tab === page); });
+    document.getElementById('main-content').scrollTop = 0;
+    import(`./modules/${page}.js`).then(m => { if(m.default) m.default(); }).catch(e => console.error("Nav Error:", e));
 }
+window.editProfile = function() { const n=prompt('Nama:', appState.userName); if(n&&n.trim()){appState.userName=n.trim();saveState();updateUI();renderDashboard();} }
+window.resetData = function() { if(confirm('⚠️ Yakin reset SEMUA data poin dan utang?')){localStorage.removeItem('owi_state');location.reload();} }
 
-// ==========================================
-// FUNGSI LAINNYA
-// ==========================================
-window.editProfile = function() {
-    const newName = prompt('Masukkan panggilan kamu:', appState.userName);
-    if (newName && newName.trim() !== '') {
-        appState.userName = newName.trim();
-        saveState();
-        updateUI();
-        renderDashboard(); 
-    }
-}
-
-window.resetData = function() {
-    if (confirm('⚠️ Yakin mau reset SEMUA data poin dan utang?')) {
-        localStorage.removeItem('owi_state');
-        location.reload();
-    }
-}
-
-// ==========================================
-// INISIALISASI PERTAMA KALI
-// ==========================================
 loadState();
-try {
-    renderDashboard(); 
-    const homeBtn = document.querySelector('.nav-btn[data-tab="dashboard"]');
-    if(homeBtn) homeBtn.classList.add('nav-active');
-} catch (e) {
-    console.error("Gagal render awal:", e);
-}
+try { renderDashboard(); document.querySelector('.nav-btn[data-tab="dashboard"]')?.classList.add('nav-active'); } catch(e) {}
