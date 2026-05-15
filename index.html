@@ -8,20 +8,22 @@
     <!-- FONT RETRO 98 -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         body { 
             font-family: 'VT323', monospace; 
-            background-color: #008080; /* Warna Desktop Teal Khas 98 */
+            background-color: #008080; /* Teal Khas 98 */
             color: #000;
             font-size: 18px;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s, color 0.2s;
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* SISTEM WIN 98 */
+        /* SISTEM WIN 98 (TERANG) */
         .win98-window {
             background: #C0C0C0;
             border-top: 2px solid #FFFFFF;
@@ -31,7 +33,7 @@
             box-shadow: 1px 1px 0 0 #000;
         }
         .win98-titlebar {
-            background: #000080;
+            background: #000080; /* Biru Tua */
             color: #FFF;
             font-weight: bold;
             padding: 2px 4px;
@@ -62,19 +64,27 @@
             font-family: 'VT323', monospace;
             font-size: 16px;
             background: #FFF;
+            color: #000;
             border-top: 2px solid #808080;
             border-left: 2px solid #808080;
             border-right: 2px solid #FFFFFF;
             border-bottom: 2px solid #FFFFFF;
             padding: 2px 4px;
         }
-        input[type="checkbox"] {
-            appearance: auto;
-            width: 16px;
-            height: 16px;
-        }
-        /* Hilangkan semua border-radius bawaan tailwind */
         *, *::before, *::after { border-radius: 0 !important; }
+
+        /* ========================================= */
+        /* DARK MODE HIGH CONTRAST (WINDOWS 98 STYLE) */
+        /* ========================================= */
+        html.dark body { background-color: #000000; color: #00FF00; } /* Item Pekat + Hijau Neon */
+        html.dark .win98-window { background: #1A1A1A; border-color: #808080 #000 #000 #808080; }
+        html.dark .win98-titlebar { background: #800080; color: #00FF00; } /* Ungu Gelap + Hijau Neon */
+        html.dark .win98-btn { background: #1A1A1A; color: #00FF00; border-color: #808080 #000 #000 #808080; outline-color: #00FF00; }
+        html.dark .win98-btn:active { border-color: #000 #808080 #808080 #000; }
+        html.dark input, html.dark select { background: #000; color: #00FF00; border-color: #000 #808080 #808080 #000; }
+        html.dark .bg-black { background-color: #0D0D0D; color: #00FF00; } /* CMD Box */
+        html.dark .text-gray-600, html.dark .text-gray-400 { color: #A0A0A0 !important; }
+        html.dark .text-blue-800, html.dark .text-red-800 { color: #00FFFF !important; } /* Cyan Neon */
     </style>
 </head>
 <body>
@@ -99,13 +109,17 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 hidden z-20" onclick="window.toggleSidebar()"></div>
         
         <!-- SIDEBAR 98 -->
-        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-teal-800 z-30 transform -translate-x-full transition-transform duration-300 p-4 border-r-2 border-gray-900 shadow-2xl">
-            <h2 class="text-white font-bold text-xl border-b border-gray-400 pb-2 mb-4">Start Menu</h2>
-            <div class="space-y-2 text-white">
-                <button onclick="window.editProfile()" class="w-full text-left p-2 hover:bg-teal-700">👤 <span id="sidebar-profile-btn">Edit Nama</span></button>
-                <button onclick="window.toggleTheme()" class="w-full text-left p-2 hover:bg-teal-700">🌙 <span id="sidebar-theme-btn">Tema Gelap</span></button>
-                <button onclick="window.resetData()" class="w-full text-left p-2 hover:bg-red-900 text-red-200">🗑️ Reset Data</button>
-                <a href="https://trakteer.id/owi_apps/tip" target="_blank" class="block w-full text-left p-2 hover:bg-teal-700 text-amber-400">☕ Dukung App</a>
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 win98-window z-30 transform -translate-x-full transition-transform duration-300 p-0 border-l-0 border-t-0 border-b-0" style="border-right: 2px solid #404040;">
+            <div class="win98-titlebar" style="border:none; border-bottom: 2px solid #404040;">
+                <span>Start_Menu.exe</span>
+            </div>
+            <div class="p-4 space-y-2">
+                <button onclick="window.editProfile()" class="w-full text-left p-2 hover:bg-gray-300 dark:hover:bg-gray-800">👤 <span id="sidebar-profile-btn">Edit Nama</span></button>
+                <button onclick="window.toggleTheme()" class="w-full text-left p-2 hover:bg-gray-300 dark:hover:bg-gray-800">🌙 <span id="sidebar-theme-btn">Tema Gelap</span></button>
+                <hr class="border-gray-400 dark:border-gray-700 my-2">
+                <button onclick="window.resetData()" class="w-full text-left p-2 hover:bg-red-200 dark:hover:bg-red-900 text-red-700 dark:text-red-400">🗑️ Reset Data</button>
+                <hr class="border-gray-400 dark:border-gray-700 my-2">
+                <a href="https://trakteer.id/owi_apps/gift" target="_blank" class="block w-full text-left p-2 hover:bg-amber-100 dark:hover:bg-amber-900 text-amber-700 dark:text-amber-400">☕ Dukung App</a>
             </div>
         </div>
 
