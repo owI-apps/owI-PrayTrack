@@ -73,8 +73,6 @@
         }
         /* Hilangkan semua border-radius bawaan tailwind */
         *, *::before, *::after { border-radius: 0 !important; }
-                /* Hilangkan semua border-radius bawaan tailwind */
-        *, *::before, *::after { border-radius: 0 !important; }
 
         /* EFEK TOMBOL NAVIGASI AKTIF (WIN 98) */
         .nav-active {
@@ -84,13 +82,9 @@
             border-right: 2px solid #FFFFFF !important;
             border-bottom: 2px solid #FFFFFF !important;
         }
-        html.dark .nav-active {
-            background: #333 !important;
-            border-top: 2px solid #000 !important;
-            border-left: 2px solid #000 !important;
-            border-right: 2px solid #808080 !important;
-            border-bottom: 2px solid #808080 !important;
-        }
+
+        /* Ikon Retro Pixelated */
+        .retro-icon { image-rendering: pixelated; }
 
         /* ========================================= */
         /* DARK MODE HIGH CONTRAST (WINDOWS 98 STYLE) */
@@ -100,13 +94,11 @@
         html.dark .win98-titlebar { background: #800080; color: #00FF00; } /* Ungu Gelap + Hijau Neon */
         html.dark .win98-btn { background: #1A1A1A; color: #00FF00; border-color: #808080 #000 #000 #808080; outline-color: #00FF00; }
         html.dark .win98-btn:active { border-color: #000 #808080 #808080 #000; }
+        html.dark .nav-active { background: #333 !important; border-color: #000 #000 #808080 #808080 !important; }
         html.dark input, html.dark select { background: #000; color: #00FF00; border-color: #000 #808080 #808080 #000; }
         html.dark .bg-black { background-color: #0D0D0D; color: #00FF00; } /* CMD Box */
         html.dark .text-gray-600, html.dark .text-gray-400 { color: #A0A0A0 !important; }
         html.dark .text-blue-800, html.dark .text-red-800 { color: #00FFFF !important; } /* Cyan Neon */
-
-        /* Ikon Retro Pixelated */
-        .retro-icon { image-rendering: pixelated; }
     </style>
 </head>
 <body>
