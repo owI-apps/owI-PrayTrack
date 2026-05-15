@@ -2,180 +2,98 @@ import { appState, saveState } from '../app.js';
 
 export default function renderUtang() {
     const main = document.getElementById('main-content');
-    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const t = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     
-    const renderList = () => {
+    const r = () => {
         main.innerHTML = `
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">📅 ${today}</p>
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Utang Ibadah</h2>
-            
-            <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-4">
-                <h3 class="font-bold text-orange-700 dark:text-orange-400 mb-2 flex items-center gap-2"><i data-lucide="calculator" class="w-5 h-5"></i> Kalkulator Utang Lupa</h3>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">Estimasi utang karena lupa sejak baligh.</p>
-                
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <div>
-                        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Umur Baligh</label>
-                        <input type="number" id="calc-baligh" value="14" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-full text-sm">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Umur Sekarang</label>
-                        <input type="number" id="calc-sekarang" value="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-full text-sm">
-                    </div>
+            <div class="win98-window mb-4">
+                <div class="win98-titlebar" style="background: #800000;">
+                    <span>⚠️ Utang_Ibadah.sys</span>
+                    <button class="win98-btn" style="padding: 0 4px; font-size: 12px; background: #C0C0C0; color: #000;">X</button>
                 </div>
-
-                <p class="text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Estimasi Bolos per Bulan (0-30 hari):</p>
-                <div class="space-y-1 text-sm mb-3">
-                    <label class="flex items-center justify-between text-gray-700 dark:text-gray-300">Subuh <input type="number" id="calc-subuh" value="0" min="0" max="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-16 text-right"></label>
-                    <label class="flex items-center justify-between text-gray-700 dark:text-gray-300">Dzuhur <input type="number" id="calc-dzuhur" value="0" min="0" max="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-16 text-right"></label>
-                    <label class="flex items-center justify-between text-gray-700 dark:text-gray-300">Ashar <input type="number" id="calc-ashar" value="0" min="0" max="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-16 text-right"></label>
-                    <label class="flex items-center justify-between text-gray-700 dark:text-gray-300">Maghrib <input type="number" id="calc-maghrib" value="0" min="0" max="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-16 text-right"></label>
-                    <label class="flex items-center justify-between text-gray-700 dark:text-gray-300">Isya <input type="number" id="calc-isya" value="0" min="0" max="30" class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded p-1 w-16 text-right"></label>
-                </div>
-
-                <button onclick="window.hitungLupa()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-semibold text-sm transition-colors">Hitung Taksiran</button>
-                
-                <div id="calc-result" class="hidden mt-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-orange-300 dark:border-orange-700">
-                    <p class="font-bold text-gray-800 dark:text-white mb-2 text-sm">Hasil Taksiran:</p>
-                    <div id="calc-breakdown" class="text-xs text-gray-600 dark:text-gray-300 space-y-1"></div>
-                    <button onclick="window.simpanTaksiran()" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-semibold text-sm mt-3 transition-colors">Yakin? Masukkan ke Daftar Utang</button>
+                <div class="p-4">
+                    <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">📅 ${t}</p>
+                    
+                    <h3 class="font-bold mb-2 border-b-2 border-dotted border-gray-400 pb-1">Kalkulator Lupa</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                        <div>
+                            <label class="text-xs font-semibold">Umur Baligh</label>
+                            <input type="number" id="cb" placeholder="Cth: 14" class="w-full">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold">Umur Sekarang</label>
+                            <input type="number" id="cs" placeholder="Cth: 30" class="w-full">
+                        </div>
+                    </div>
+                    <p class="text-xs font-semibold mb-1">Bolos/bulan (0-30):</p>
+                    <div class="space-y-1 text-sm mb-3">
+                        <label class="flex items-center justify-between">Subuh <input type="number" id="c1" value="0" min="0" max="30" class="w-16 text-right"></label>
+                        <label class="flex items-center justify-between">Dzuhur <input type="number" id="c2" value="0" min="0" max="30" class="w-16 text-right"></label>
+                        <label class="flex items-center justify-between">Ashar <input type="number" id="c3" value="0" min="0" max="30" class="w-16 text-right"></label>
+                        <label class="flex items-center justify-between">Maghrib <input type="number" id="c4" value="0" min="0" max="30" class="w-16 text-right"></label>
+                        <label class="flex items-center justify-between">Isya <input type="number" id="c5" value="0" min="0" max="30" class="w-16 text-right"></label>
+                    </div>
+                    <button onclick="window.hL()" class="win98-btn w-full text-center font-bold">Hitung</button>
+                    
+                    <div id="hR" class="hidden mt-4 win98-window">
+                        <div class="win98-titlebar" style="background: #808000;"><span>Hasil_Taksiran</span></div>
+                        <div class="p-3">
+                            <p id="hT" class="text-sm"></p>
+                            <button onclick="window.sT()" class="win98-btn w-full text-center mt-3 font-bold" style="background: #FF0000; color: #FFF;">Masukkan ke Utang</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <h3 class="font-semibold text-gray-600 dark:text-gray-300 mb-2 mt-4">Utang Sholat</h3>
-            ${appState.utangSholat.length === 0 ? '<p class="text-sm text-gray-400 dark:text-gray-500 text-center py-2">Alhamdulillah, tidak ada catatan utang sholat.</p>' : ''}
+            <h3 class="font-bold mb-2 border-b-2 border-dotted border-gray-400 pb-1">Daftar Utang Sholat</h3>
+            ${appState.utangSholat.length === 0 ? '<p class="text-sm text-gray-500 mb-4">Kosong</p>' : ''}
             ${appState.utangSholat.map((u, i) => `
-                <div class="bg-white dark:bg-[#0F172A] rounded-xl shadow-sm dark:shadow-none dark:border dark:border-slate-800 p-4 mb-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="font-semibold text-gray-800 dark:text-white">${u.sholat}</h4>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">${u.lunas} / ${u.total}</span>
-                            <button onclick="window.editUtangSholat(${i})" class="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <div class="win98-window mb-3">
+                    <div class="p-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold">${u.sholat}</h4>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">${u.lunas}/${u.total} waktu</span>
+                                <button onclick="window.eS(${i})" class="win98-btn" style="padding: 0 4px; font-size: 12px;">Edit</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-3">
-                        <div class="bg-orange-500 dark:bg-orange-600 h-2.5 rounded-full" style="width: ${(u.lunas/u.total)*100}%"></div>
-                    </div>
-                    <button onclick="window.lunasiSholat(${i})" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg active:bg-orange-600 text-sm font-semibold transition-colors">Lunasi 1</button>
-                </div>
-            `).join('')}
-
-            <h3 class="font-semibold text-gray-600 dark:text-gray-300 mb-2 mt-4">Utang Puasa</h3>
-            ${appState.utangPuasa.length === 0 ? '<p class="text-sm text-gray-400 dark:text-gray-500 text-center py-2">Alhamdulillah, tidak ada catatan utang puasa.</p>' : ''}
-            ${appState.utangPuasa.map((u, i) => `
-                <div class="bg-white dark:bg-[#0F172A] rounded-xl shadow-sm dark:shadow-none dark:border dark:border-slate-800 p-4 mb-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="font-semibold text-gray-800 dark:text-white">${u.keterangan}</h4>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">${u.lunas} / ${u.total} Hari</span>
-                            <button onclick="window.editUtangPuasa(${i})" class="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <div class="w-full bg-gray-300 dark:bg-gray-800 h-3 mb-3 border border-gray-400">
+                            <div class="bg-blue-800 dark:bg-blue-400 h-full" style="width:${(u.lunas/u.total)*100}%"></div>
                         </div>
+                        <button onclick="window.lS(${i})" class="win98-btn w-full text-center font-bold">Lunasi 1</button>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 mb-3">
-                        <div class="bg-orange-500 dark:bg-orange-600 h-2.5 rounded-full" style="width: ${(u.lunas/u.total)*100}%"></div>
-                    </div>
-                    <button onclick="window.lunasiPuasa(${i})" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg active:bg-orange-600 text-sm font-semibold transition-colors">Lunasi 1 Hari</button>
                 </div>
             `).join('')}
         `;
-        lucide.createIcons();
-    }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    };
 
-    window.hitungLupa = () => {
-        const baligh = parseInt(document.getElementById('calc-baligh').value);
-        const sekarang = parseInt(document.getElementById('calc-sekarang').value);
-        
-        if(sekarang <= baligh) { alert('Umur sekarang harus lebih tua dari umur baligh!'); return; }
+    window.hL = () => {
+        const b = parseInt(document.getElementById('cb').value), s = parseInt(document.getElementById('cs').value);
+        if (!b || !s || s <= b) { alert('Umur sekarang harus lebih tua dari umur baligh!'); return; }
+        const m = (s - b) * 12;
+        const bolos = { Subuh: parseInt(document.getElementById('c1').value)||0, Dzuhur: parseInt(document.getElementById('c2').value)||0, Ashar: parseInt(document.getElementById('c3').value)||0, Maghrib: parseInt(document.getElementById('c4').value)||0, Isya: parseInt(document.getElementById('c5').value)||0 };
+        let h = "";
+        Object.keys(bolos).forEach(k => { if(bolos[k]>0) h += `<p>${k}: ${m} bln x ${bolos[k]} = <b>${m*bolos[k]} waktu</b></p>`; });
+        if (!h) h = "<p>Tidak ada taksiran.</p>";
+        document.getElementById('hT').innerHTML = h;
+        document.getElementById('hR').classList.remove('hidden');
+    };
 
-        const totalBulan = (sekarang - baligh) * 12;
-        const bolos = {
-            'Subuh': parseInt(document.getElementById('calc-subuh').value) || 0,
-            'Dzuhur': parseInt(document.getElementById('calc-dzuhur').value) || 0,
-            'Ashar': parseInt(document.getElementById('calc-ashar').value) || 0,
-            'Maghrib': parseInt(document.getElementById('calc-maghrib').value) || 0,
-            'Isya': parseInt(document.getElementById('calc-isya').value) || 0
-        };
-
-        const breakdownEl = document.getElementById('calc-breakdown');
-        let htmlBreakdown = "";
-        let adaUtang = false;
-
-        Object.keys(bolos).forEach(sholat => {
-            if(bolos[sholat] > 0) {
-                const totalUtang = totalBulan * bolos[sholat];
-                htmlBreakdown += `<p>• ${sholat}: ${totalBulan} bulan x ${bolos[sholat]} hari = <strong>${totalUtang} rakaat</strong></p>`;
-                adaUtang = true;
+    window.sT = () => {
+        const b = parseInt(document.getElementById('cb').value), s = parseInt(document.getElementById('cs').value), m = (s-b)*12;
+        const bolos = { Subuh: parseInt(document.getElementById('c1').value)||0, Dzuhur: parseInt(document.getElementById('c2').value)||0, Ashar: parseInt(document.getElementById('c3').value)||0, Maghrib: parseInt(document.getElementById('c4').value)||0, Isya: parseInt(document.getElementById('c5').value)||0 };
+        Object.keys(bolos).forEach(k => {
+            if(bolos[k]>0) {
+                const t = m*bolos[k], ex = appState.utangSholat.find(u => u.sholat === k);
+                if(ex) ex.total += t; else appState.utangSholat.push({sholat:k,total:t,lunas:0});
             }
         });
+        saveState(); r();
+    };
 
-        if(!adaUtang) { htmlBreakdown = "<p>Tidak ada utang taksiran.</p>"; }
-        breakdownEl.innerHTML = htmlBreakdown;
-        document.getElementById('calc-result').classList.remove('hidden');
-    }
+    window.eS = i => { const n=prompt('Edit total waktu:',appState.utangSholat[i].total); if(n&&!isNaN(parseInt(n))){appState.utangSholat[i].total=parseInt(n);if(appState.utangSholat[i].lunas>appState.utangSholat[i].total)appState.utangSholat[i].lunas=appState.utangSholat[i].total;saveState();r();} };
+    window.lS = i => { if(appState.utangSholat[i].lunas<appState.utangSholat[i].total){appState.utangSholat[i].lunas+=1;saveState();r();} };
 
-    window.simpanTaksiran = () => {
-        const baligh = parseInt(document.getElementById('calc-baligh').value);
-        const sekarang = parseInt(document.getElementById('calc-sekarang').value);
-        const totalBulan = (sekarang - baligh) * 12;
-        
-        const bolos = {
-            'Subuh': parseInt(document.getElementById('calc-subuh').value) || 0,
-            'Dzuhur': parseInt(document.getElementById('calc-dzuhur').value) || 0,
-            'Ashar': parseInt(document.getElementById('calc-ashar').value) || 0,
-            'Maghrib': parseInt(document.getElementById('calc-maghrib').value) || 0,
-            'Isya': parseInt(document.getElementById('calc-isya').value) || 0
-        };
-
-        Object.keys(bolos).forEach(sholat => {
-            if(bolos[sholat] > 0) {
-                const totalUtang = totalBulan * bolos[sholat];
-                const existing = appState.utangSholat.find(u => u.sholat === sholat);
-                if(existing) {
-                    existing.total += totalUtang;
-                } else {
-                    appState.utangSholat.push({ sholat: sholat, total: totalUtang, lunas: 0 });
-                }
-            }
-        });
-        saveState();
-        renderList();
-    }
-
-    window.editUtangSholat = (index) => {
-        const newTotal = prompt(`Edit total utang ${appState.utangSholat[index].sholat}:`, appState.utangSholat[index].total);
-        if (newTotal !== null && !isNaN(parseInt(newTotal))) {
-            appState.utangSholat[index].total = parseInt(newTotal);
-            if(appState.utangSholat[index].lunas > appState.utangSholat[index].total) appState.utangSholat[index].lunas = appState.utangSholat[index].total;
-            saveState();
-            renderList();
-        }
-    }
-
-    window.editUtangPuasa = (index) => {
-        const newTotal = prompt(`Edit total utang ${appState.utangPuasa[index].keterangan} (dalam hari):`, appState.utangPuasa[index].total);
-        if (newTotal !== null && !isNaN(parseInt(newTotal))) {
-            appState.utangPuasa[index].total = parseInt(newTotal);
-            if(appState.utangPuasa[index].lunas > appState.utangPuasa[index].total) appState.utangPuasa[index].lunas = appState.utangPuasa[index].total;
-            saveState();
-            renderList();
-        }
-    }
-
-    window.lunasiSholat = (index) => {
-        if (appState.utangSholat[index].lunas < appState.utangSholat[index].total) { 
-            appState.utangSholat[index].lunas += 1; 
-            saveState();
-            renderList(); 
-        }
-    }
-
-    window.lunasiPuasa = (index) => {
-        if (appState.utangPuasa[index].lunas < appState.utangPuasa[index].total) { 
-            appState.utangPuasa[index].lunas += 1; 
-            saveState();
-            renderList(); 
-        }
-    }
-
-    renderList();
+    r();
 }
