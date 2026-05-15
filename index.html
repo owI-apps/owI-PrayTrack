@@ -73,6 +73,24 @@
         }
         /* Hilangkan semua border-radius bawaan tailwind */
         *, *::before, *::after { border-radius: 0 !important; }
+                /* Hilangkan semua border-radius bawaan tailwind */
+        *, *::before, *::after { border-radius: 0 !important; }
+
+        /* EFEK TOMBOL NAVIGASI AKTIF (WIN 98) */
+        .nav-active {
+            background: #A0A0A0 !important;
+            border-top: 2px solid #404040 !important;
+            border-left: 2px solid #404040 !important;
+            border-right: 2px solid #FFFFFF !important;
+            border-bottom: 2px solid #FFFFFF !important;
+        }
+        html.dark .nav-active {
+            background: #333 !important;
+            border-top: 2px solid #000 !important;
+            border-left: 2px solid #000 !important;
+            border-right: 2px solid #808080 !important;
+            border-bottom: 2px solid #808080 !important;
+        }
 
         /* ========================================= */
         /* DARK MODE HIGH CONTRAST (WINDOWS 98 STYLE) */
