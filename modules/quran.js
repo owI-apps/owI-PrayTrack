@@ -1,59 +1,65 @@
 import { addPoint } from '../app.js';
-let quranSurahs = [];
-let alreadyGotPoints = false; // Biar nggak ngumpul poin terus ngeklik simpan
+let qs = [], pts = false;
 
 export default async function renderQuran() {
-    if(quranSurahs.length === 0) {
-        const response = await fetch('./data/quranData.json');
-        quranSurahs = await response.json();
+    if (qs.length === 0) {
+        try {
+            const r = await fetch('./data/quranData.json');
+            qs = await r.json();
+        } catch (e) {
+            console.error("Gagal memuat data Quran");
+        }
     }
-
+    
     const main = document.getElementById('main-content');
+    const t = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
     main.innerHTML = `
-        <h2 class="text-xl font-bold mb-4 text-gray-800">Baca Al-Quran</h2>
-        
-        <div id="quran-lastread" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 mb-6 shadow-lg text-center hidden">
-            <p class="text-sm opacity-80">Terakhir dibaca</p>
-            <h3 class="text-2xl font-bold mt-1" id="last-surat">-</h3>
-            <p class="text-lg" id="last-ayat">Ayat ke-</p>
-        </div>
-
-        <div class="bg-white rounded-xl shadow p-4">
-            <h3 class="font-semibold mb-3">Update Posisi Baca (+13 Poin)</h3>
-            <p class="text-xs text-gray-500 mb-4">Masukkan nomor surat dan ayat</p>
-            <div class="flex gap-2 mb-2">
-                <input type="number" id="input-surat" placeholder="No. Surat" class="border rounded p-2 w-1/2" min="1" max="114">
-                <input type="number" id="input-ayat" placeholder="No. Ayat" class="border rounded p-2 w-1/2" min="1">
+        <div class="win98-window mb-4">
+            <div class="win98-titlebar">
+                <span>Al_Quran.exe</span>
+                <button class="win98-btn" style="padding: 0 4px; font-size: 12px; background: #C0C0C0; color: #000;">X</button>
             </div>
-            <p id="quran-error" class="text-red-500 text-xs mb-2 hidden"></p>
-            <button onclick="window.saveQuran()" class="w-full bg-emerald-600 text-white py-2 rounded-lg active:bg-emerald-700 mt-2 font-semibold">Simpan Posisi</button>
+            <div class="p-4">
+                <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">📅 ${t}</p>
+                
+                <div id="qlr" class="win98-window mb-4 hidden">
+                    <div class="win98-titlebar" style="background: #008000;">
+                        <span>📖 Last_Read.sys</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <p class="text-sm">Terakhir dibaca</p>
+                        <h3 class="text-2xl font-bold mt-1" id="ls">-</h3>
+                        <p class="text-lg" id="la">Ayat ke-</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold mb-2">Update Posisi (+13 Poin)</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Masukkan nomor surat & ayat</p>
+                
+                <div class="flex gap-2 mb-2">
+                    <input type="number" id="is" placeholder="No. Surat" class="w-1/2" min="1">
+                    <input type="number" id="ia" placeholder="No. Ayat" class="w-1/2" min="1">
+                </div>
+                <p id="qe" class="text-red-700 dark:text-red-400 text-sm mb-2 hidden"></p>
+                <button onclick="window.saveQ()" class="win98-btn w-full text-center font-bold">Simpan Posisi</button>
+            </div>
         </div>
     `;
 }
 
-window.saveQuran = function() {
-    const suratInput = document.getElementById('input-surat').value;
-    const ayatInput = document.getElementById('input-ayat').value;
-    const errorEl = document.getElementById('quran-error');
-
-    if(!suratInput || !ayatInput) { errorEl.textContent = 'Wajib diisi!'; errorEl.classList.remove('hidden'); return; }
-
-    const foundSurah = quranSurahs.find(s => s.id === parseInt(suratInput));
-    const ayahNum = parseInt(ayatInput);
-
-    if (!foundSurah) { errorEl.textContent = 'ID Surat tidak valid!'; errorEl.classList.remove('hidden'); return; }
-    if (isNaN(ayahNum) || ayahNum <= 0 || ayahNum > foundSurah.totalAyahs) {
-        errorEl.textContent = `Ayat tidak valid! ${foundSurah.name} maks ${foundSurah.totalAyahs} ayat.`;
-        errorEl.classList.remove('hidden'); return;
-    }
-
-    errorEl.classList.add('hidden');
-    document.getElementById('last-surat').textContent = foundSurah.name;
-    document.getElementById('last-ayat').textContent = `Ayat ke-${ayahNum}`;
-    document.getElementById('quran-lastread').classList.remove('hidden');
+window.saveQ = function() {
+    const si = document.getElementById('is').value, ai = document.getElementById('ia').value, ee = document.getElementById('qe');
+    if (!si || !ai) { ee.textContent = 'Wajib diisi!'; ee.classList.remove('hidden'); return; }
     
-    if(!alreadyGotPoints) {
-        addPoint('quran', 13);
-        alreadyGotPoints = true;
-    }
+    const f = qs.find(s => s.id === parseInt(si)), an = parseInt(ai);
+    if (!f) { ee.textContent = 'Surat tidak valid!'; ee.classList.remove('hidden'); return; }
+    if (isNaN(an) || an <= 0 || an > f.totalAyahs) { ee.textContent = `Maks ${f.totalAyahs} ayat!`; ee.classList.remove('hidden'); return; }
+    
+    ee.classList.add('hidden');
+    document.getElementById('ls').textContent = f.name;
+    document.getElementById('la').textContent = `Ayat ke-${an}`;
+    document.getElementById('qlr').classList.remove('hidden');
+    
+    if (!pts) { addPoint('quran', 13); pts = true; }
 };
