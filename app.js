@@ -2,7 +2,8 @@ import { renderDashboard } from './modules/dashboard.js';
 
 const todayStr = new Date().toISOString().slice(0, 10);
 
-export let appState = {
+// GANTI LET JADI CONST! Pake Object.assign nanti buat nge-load
+export const appState = {
     todayDate: todayStr,
     points: { wajib: 0, sunnah: 0, quran: 0, infaq: 0 },
     yesterdayPoints: 0,
@@ -12,7 +13,10 @@ export let appState = {
     utangSholat: [],
     utangPuasa: [],
     quranLastRead: { surahName: '', ayah: 0 },
-    sholatHistory: {} // TAMBAHAN: Nyimpen data sholat per tanggal
+    sholatHistory: {},
+    infaqList: [], // TAMBAHAN: Biar data infaq nggak hilang
+    quranClaimedToday: false, // TAMBAHAN: Biar poin quran bisa di-claim tiap hari
+    infaqClaimedToday: false // TAMBAHAN: Biar poin infaq bisa di-claim tiap hari
 };
 
 // ==========================================
@@ -23,7 +27,8 @@ function loadState() {
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
-            appState = parsed;
+            // FIX KRITIS: Pakai Object.assign biar referensi export-nya nggak putus
+            Object.assign(appState, parsed); 
         } else {
             // Hari berganti
             appState.yesterdayPoints = calculatePointsForDate(parsed.todayDate, parsed.sholatHistory);
@@ -34,7 +39,10 @@ function loadState() {
             appState.utangPuasa = parsed.utangPuasa || [];
             appState.quranLastRead = parsed.quranLastRead || { surahName: '', ayah: 0 };
             appState.sholatHistory = parsed.sholatHistory || {};
+            appState.infaqList = parsed.infaqList || [];
             appState.points = { wajib: 0, sunnah: 0, quran: 0, infaq: 0 }; // Reset poin hari ini
+            appState.quranClaimedToday = false; // Reset claim poin
+            appState.infaqClaimedToday = false; // Reset claim poin
             saveState();
         }
     }
