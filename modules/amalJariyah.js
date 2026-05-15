@@ -1,9 +1,11 @@
-import { addPoint } from '../app.js';
-let iL=[], pts=false;
+import { appState, saveState, addPoint } from '../app.js'; // Tambah import appState & saveState
 
 export default function renderAmalJariyah() {
     const main = document.getElementById('main-content');
-    const t = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'}), tI=iL.reduce((s,i)=>s+i.nominal,0);
+    const t = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    
+    // FIX: Ambil total dari appState, bukan variabel iL
+    const tI = appState.infaqList.reduce((s,i)=>s+i.nominal,0);
     
     main.innerHTML = `
         <div class="win98-window mb-4">
@@ -14,7 +16,6 @@ export default function renderAmalJariyah() {
             <div class="p-4">
                 <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">📅 ${t}</p>
 
-                <!-- INFAQ & SEDEKAH -->
                 <button onclick="window.tC('ci')" class="win98-btn w-full text-left mb-2 font-bold">🤲 Infaq & Sedekah [ + ]</button>
                 <div id="ci" class="hidden mb-4 border-2 border-gray-400 dark:border-gray-600 p-3">
                     <h4 class="font-bold text-sm mb-2">Sadaqah Amal (+5 Poin)</h4>
@@ -32,11 +33,11 @@ export default function renderAmalJariyah() {
                         </div>
                     </div>
                     <button onclick="window.aI()" class="win98-btn w-full text-center font-bold">Tambah</button>
-                    ${iL.length>0?`<div class="mt-3 text-sm max-h-24 overflow-y-auto">${iL.map((x,i)=>`<div class="flex justify-between"><span>${x.k} Rp ${x.n.toLocaleString('id-ID')}</span><button onclick="window.dI(${i})" class="text-red-700 dark:text-red-400">Hapus</button></div>`).join('')}</div>`:''}
+                    
+                    ${appState.infaqList.length>0?`<div class="mt-3 text-sm max-h-24 overflow-y-auto">${appState.infaqList.map((x,i)=>`<div class="flex justify-between"><span>${x.kategori} Rp ${x.nominal.toLocaleString('id-ID')}</span><button onclick="window.dI(${i})" class="text-red-700 dark:text-red-400">Hapus</button></div>`).join('')}</div>`:''}
                     <div class="mt-2 pt-2 border-t-2 border-dotted border-gray-400 font-bold text-right">Total: Rp ${tI.toLocaleString('id-ID')}</div>
                 </div>
 
-                <!-- WAKAF -->
                 <button onclick="window.tC('cw')" class="win98-btn w-full text-left mb-2 font-bold">🏠 Wakaf [ + ]</button>
                 <div id="cw" class="hidden mb-4 border-2 border-gray-400 dark:border-gray-600 p-3">
                     <div class="mb-3"><label class="text-sm font-semibold">Jenis:</label><select id="wj" class="w-full mt-1"><option value="Uang">Uang</option><option value="Benda">Benda</option></select></div>
@@ -44,7 +45,6 @@ export default function renderAmalJariyah() {
                     <button onclick="window.aW()" class="win98-btn w-full text-center font-bold">Catat</button>
                 </div>
 
-                <!-- ZAKAT -->
                 <button onclick="window.tC('cz')" class="win98-btn w-full text-left mb-2 font-bold">⚖️ Zakat [ + ]</button>
                 <div id="cz" class="hidden mb-4 border-2 border-gray-400 dark:border-gray-600 p-3 text-sm">
                     <p class="mb-3 text-gray-600 dark:text-gray-400">Zakat Fitrah & Mal wajib dikeluarkan bagi yang mampu. Hitung sesuai ketentuan.</p>
@@ -54,10 +54,41 @@ export default function renderAmalJariyah() {
         </div>
     `;
     
-    document.querySelectorAll('.sc').forEach(cb => cb.addEventListener('change', e => { if(e.target.checked && !pts){ addPoint('infaq',5); pts=true; } }));
+    // FIX POIN: Pakai appState.infaqClaimedToday
+    document.querySelectorAll('.sc').forEach(cb => cb.addEventListener('change', e => { 
+        if(e.target.checked && !appState.infaqClaimedToday){ 
+            addPoint('infaq',5); 
+            appState.infaqClaimedToday = true;
+            saveState();
+        } 
+    }));
 }
 
 window.tC = id => { document.getElementById(id).classList.toggle('hidden'); };
-window.aI = () => { const k=document.getElementById('ik').value,n=parseInt(document.getElementById('ii').value); if(!n||n<=0){alert('Isi nominal!');return;} iL.unshift({k,n}); if(!pts){addPoint('infaq',10);pts=true;} renderAmalJariyah(); };
-window.dI = i => { iL.splice(i,1); renderAmalJariyah(); };
-window.aW = () => { const j=document.getElementById('wj').value,k=document.getElementById('wi').value; if(!k){alert('Isi keterangan!');return;} alert(`Wakaf ${j}: ${k} dicatat!`); }; // Sementara pakai alert
+
+window.aI = () => { 
+    const k=document.getElementById('ik').value, n=parseInt(document.getElementById('ii').value); 
+    if(!n||n<=0){alert('Isi nominal!');return;} 
+    
+    // FIX: Masukin ke appState biar kesave
+    appState.infaqList.unshift({kategori: k, nominal: n}); 
+    
+    if(!appState.infaqClaimedToday){
+        addPoint('infaq',10);
+        appState.infaqClaimedToday = true;
+    }
+    saveState();
+    renderAmalJariyah(); 
+};
+
+window.dI = i => { 
+    appState.infaqList.splice(i,1); 
+    saveState();
+    renderAmalJariyah(); 
+};
+
+window.aW = () => { 
+    const j=document.getElementById('wj').value, k=document.getElementById('wi').value; 
+    if(!k){alert('Isi keterangan!');return;} 
+    alert(`Wakaf ${j}: ${k} dicatat!`); 
+};
