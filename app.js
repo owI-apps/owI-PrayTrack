@@ -21,10 +21,8 @@ function loadState() {
     if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.todayDate === todayStr) {
-            // Masih hari yang sama, load semua data
             appState = parsed;
         } else {
-            // Hari berganti, pindahin poin hari ini ke poin kemarin
             const totalYesterday = parsed.points.wajib + parsed.points.sunnah + parsed.points.quran + parsed.points.infaq;
             appState.yesterdayPoints = totalYesterday;
             appState.userName = parsed.userName || 'Sobat';
@@ -32,10 +30,10 @@ function loadState() {
             appState.lang = parsed.lang || 'id';
             appState.utangSholat = parsed.utangSholat || [];
             appState.utangPuasa = parsed.utangPuasa || [];
-            saveState(); // Simpan state baru
+            saveState();
         }
     }
-    applyTheme(); // Pasang tema saat load
+    applyTheme();
 }
 
 export function saveState() {
@@ -86,7 +84,7 @@ window.toggleTheme = function() {
     saveState();
     applyTheme();
     // Re-render dashboard biar teks retro dan progress bar ikut ganti warna
-    renderDashboard(); 
+    window.navigateTo('dashboard'); 
 }
 
 // ==========================================
@@ -106,23 +104,15 @@ window.toggleSidebar = function() {
 }
 
 // ==========================================
-// SISTEM NAVIGASI (BOTTOM BAR)
+// SISTEM NAVIGASI (BOTTOM BAR) - FIX ONCLICK
 // ==========================================
 window.navigateTo = function(page) {
-    // Update warna tombol navbar
+    // Update warna tombol navbar pake class CSS
     document.querySelectorAll('.nav-btn').forEach(btn => {
         if (btn.dataset.tab === page) {
-            btn.style.background = '#A0A0A0'; // Warna abu tekan Windows 98
-            btn.style.borderTop = '2px solid #404040';
-            btn.style.borderLeft = '2px solid #404040';
-            btn.style.borderRight = '2px solid #FFFFFF';
-            btn.style.borderBottom = '2px solid #FFFFFF';
+            btn.classList.add('nav-active'); // Kasih efek ditekan
         } else {
-            btn.style.background = '#C0C0C0';
-            btn.style.borderTop = '2px solid #FFFFFF';
-            btn.style.borderLeft = '2px solid #FFFFFF';
-            btn.style.borderRight = '2px solid #404040';
-            btn.style.borderBottom = '2px solid #404040';
+            btn.classList.remove('nav-active'); // Balikin ke biasa
         }
     });
 
@@ -135,7 +125,6 @@ window.navigateTo = function(page) {
             if (module.default) {
                 module.default();
             }
-            // Re-init ikon lucide kalau ada
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -162,7 +151,7 @@ window.editProfile = function() {
         appState.userName = newName.trim();
         saveState();
         updateUI();
-        renderDashboard(); // Update nama di CMD header
+        window.navigateTo('dashboard'); 
     }
 }
 
@@ -186,4 +175,6 @@ if (typeof lucide !== 'undefined') {
     lucide.createIcons();
 }
 loadState();
-renderDashboard();
+
+// PENTING: Pakai navigateTo saat pertama kali load biar tombol Home langsung aktif
+window.navigateTo('dashboard');
