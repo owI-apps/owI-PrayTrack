@@ -1,0 +1,19 @@
+[
+  { "id": 1, "name": "Al-Fatihah", "totalAyahs": 7 },
+  { "id": 2, "name": "Al-Baqarah", "totalAyahs": 286 },
+  { "id": 3, "name": "Ali 'Imran", "totalAyahs": 200 },
+  { "id": 4, "name": "An-Nisa", "totalAyahs": 176 },
+  { "id": 5, "name": "Al-Ma'idah", "totalAyahs": 120 },
+  { "id": 6, "name": "Al-An'am", "totalAyahs": 165 },
+  { "id": 7, "name": "Al-A'raf", "totalAyahs": 206 },
+  { "id": 8, "name": "Al-Anfal", "totalAyahs": 75 },
+  { "id": 9, "name": "At-Tawbah", "totalAyahs": 129 },
+  { "id": 10, "name": "Yunus", "totalAyahs": 109 },
+  { "id": 36, "name": "Ya-Sin", "totalAyahs": 83 },
+  { "id": 55, "name": "Ar-Rahman", "totalAyahs": 78 },
+  { "id": 56, "name": "Al-Waqi'ah", "totalAyahs": 96 },
+  { "id": 67, "name": "Al-Mulk", "totalAyahs": 30 },
+  { "id": 112, "name": "Al-Ikhlas", "totalAyahs": 4 },
+  { "id": 113, "name": "Al-Falaq", "totalAyahs": 5 },
+  { "id": 114, "name": "An-Nas", "totalAyahs": 6 }
+]
