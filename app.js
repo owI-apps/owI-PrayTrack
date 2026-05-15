@@ -15,6 +15,7 @@ export const appState = {
     quranLastRead: { surahName: '', ayah: 0 },
     sholatHistory: {},
     infaqList: [], // TAMBAHAN: Biar data infaq nggak hilang
+    dosaList: [],
     quranClaimedToday: false, // TAMBAHAN: Biar poin quran bisa di-claim tiap hari
     infaqClaimedToday: false // TAMBAHAN: Biar poin infaq bisa di-claim tiap hari
 };
