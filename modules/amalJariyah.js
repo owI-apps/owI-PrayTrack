@@ -21,7 +21,9 @@ export default function renderAmalJariyah() {
                     <h4 class="font-bold text-sm mb-2">Sadaqah Amal (+5 Poin)</h4>
                     <div class="space-y-2 text-sm mb-4">
                         <label class="flex items-center gap-2"><input type="checkbox" class="sc" style="width:16px;height:16px;"> Senyum</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" class="sc" style="width:16px;height:16px;"> Menyingkirkan gangguan</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="sc" style="width:16px;height:16px;"> Berbuat Baik</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="sc" style="width:16px;height:16px;"> Mendoakan Orang Lain</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="sc" style="width:16px;height:16px;"> Lainnya</label>
                     </div>
 
                     <h4 class="font-bold text-sm mb-2">Infaq Harta (+10 Poin)</h4>
