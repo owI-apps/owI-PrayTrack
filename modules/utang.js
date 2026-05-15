@@ -93,7 +93,17 @@ export default function renderUtang() {
     };
 
     window.eS = i => { const n=prompt('Edit total waktu:',appState.utangSholat[i].total); if(n&&!isNaN(parseInt(n))){appState.utangSholat[i].total=parseInt(n);if(appState.utangSholat[i].lunas>appState.utangSholat[i].total)appState.utangSholat[i].lunas=appState.utangSholat[i].total;saveState();r();} };
-    window.lS = i => { if(appState.utangSholat[i].lunas<appState.utangSholat[i].total){appState.utangSholat[i].lunas+=1;saveState();r();} };
+    
+    // INI YANG DITAMBAHIN: Konfirmasi Lunas
+    window.lS = i => {
+        if(appState.utangSholat[i].lunas < appState.utangSholat[i].total) {
+            if(confirm(`Alhamdulillah, yakin sudah melakukan utang sholat ${appState.utangSholat[i].sholat}?`)) {
+                appState.utangSholat[i].lunas += 1;
+                saveState();
+                r();
+            }
+        }
+    };
 
     r();
 }
