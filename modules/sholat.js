@@ -1,4 +1,4 @@
-import { addPoint, subtractPoint } from '../app.js';
+import { addPoint, subtractPoint, appState, saveState } from '../app.js';
 
 export default function renderSholat() {
     const main = document.getElementById('main-content');
@@ -10,7 +10,7 @@ export default function renderSholat() {
         {n:'Dzikir Pagi (Setelah Subuh)', t:'d'}, 
         {n:'Qabliyah Dzuhur', t:'s'}, 
         {n:"Ba'diyah Dzuhur", t:'s'}, 
-        {n:'Qabliyah Ashar', t:'s'}, // Sesuai permintaan lu!
+        {n:'Qabliyah Ashar', t:'s'}, 
         {n:'Dzikir Sore (Setelah Ashar)', t:'d'}, 
         {n:'Qabliyah Maghrib', t:'s'}, 
         {n:"Ba'diyah Maghrib", t:'s'}, 
@@ -32,7 +32,7 @@ export default function renderSholat() {
                     ${wajib.map(x => `
                         <label class="flex items-center justify-between py-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800">
                             <span>${x}</span>
-                            <input type="checkbox" data-type="wajib" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
+                            <input type="checkbox" data-type="wajib" data-name="${x}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
                         </label>
                     `).join('')}
                 </div>
@@ -50,14 +50,30 @@ export default function renderSholat() {
         </div>
     `;
 
-    // Pasang event listener ke semua checkbox setelah HTML dirender
+    // Event Listener Checkbox
     document.querySelectorAll('.sholat-check').forEach(cb => {
         cb.addEventListener('change', e => {
             const type = e.target.dataset.type;
+            const name = e.target.dataset.name; // Ambil nama sholat wajib
+            
             if (e.target.checked) {
+                // Kalau dicentang, dapet poin
                 addPoint(type, type === 'wajib' ? 10 : 3);
             } else {
+                // Kalau di-uncheck, kurangi poin
                 subtractPoint(type, type === 'wajib' ? 10 : 3);
+                
+                // TAMBAHAN: Kalau Wajib di-uncheck, otomatis jadi utang
+                if (type === 'wajib' && name) {
+                    const existingDebt = appState.utangSholat.find(u => u.sholat === name);
+                    if (existingDebt) {
+                        existingDebt.total += 1;
+                    } else {
+                        appState.utangSholat.push({ sholat: name, total: 1, lunas: 0 });
+                    }
+                    saveState();
+                    alert(`⚠️ Utang sholat ${name} ditambahkan ke daftar utang.`);
+                }
             }
         });
     });
