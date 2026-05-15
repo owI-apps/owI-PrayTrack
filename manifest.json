@@ -9,21 +9,12 @@
   "orientation": "portrait",
   "icons": [
     {
-        "icons": [
-    {
       "src": "icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "logo-512x512.png",  // <--- GANTI SESUAI NAMA FILE DI GITHUB LU
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-    },
-    {
-      "src": "icon-512x512.png",
+      "src": "logo-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
