@@ -1,59 +1,150 @@
-import { addPoint } from '../app.js';
-let quranSurahs = [];
-let alreadyGotPoints = false; // Biar nggak ngumpul poin terus ngeklik simpan
-
-export default async function renderQuran() {
-    if(quranSurahs.length === 0) {
-        const response = await fetch('./data/quranData.json');
-        quranSurahs = await response.json();
-    }
-
-    const main = document.getElementById('main-content');
-    main.innerHTML = `
-        <h2 class="text-xl font-bold mb-4 text-gray-800">Baca Al-Quran</h2>
-        
-        <div id="quran-lastread" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 mb-6 shadow-lg text-center hidden">
-            <p class="text-sm opacity-80">Terakhir dibaca</p>
-            <h3 class="text-2xl font-bold mt-1" id="last-surat">-</h3>
-            <p class="text-lg" id="last-ayat">Ayat ke-</p>
-        </div>
-
-        <div class="bg-white rounded-xl shadow p-4">
-            <h3 class="font-semibold mb-3">Update Posisi Baca (+13 Poin)</h3>
-            <p class="text-xs text-gray-500 mb-4">Masukkan nomor surat dan ayat</p>
-            <div class="flex gap-2 mb-2">
-                <input type="number" id="input-surat" placeholder="No. Surat" class="border rounded p-2 w-1/2" min="1" max="114">
-                <input type="number" id="input-ayat" placeholder="No. Ayat" class="border rounded p-2 w-1/2" min="1">
-            </div>
-            <p id="quran-error" class="text-red-500 text-xs mb-2 hidden"></p>
-            <button onclick="window.saveQuran()" class="w-full bg-emerald-600 text-white py-2 rounded-lg active:bg-emerald-700 mt-2 font-semibold">Simpan Posisi</button>
-        </div>
-    `;
-}
-
-window.saveQuran = function() {
-    const suratInput = document.getElementById('input-surat').value;
-    const ayatInput = document.getElementById('input-ayat').value;
-    const errorEl = document.getElementById('quran-error');
-
-    if(!suratInput || !ayatInput) { errorEl.textContent = 'Wajib diisi!'; errorEl.classList.remove('hidden'); return; }
-
-    const foundSurah = quranSurahs.find(s => s.id === parseInt(suratInput));
-    const ayahNum = parseInt(ayatInput);
-
-    if (!foundSurah) { errorEl.textContent = 'ID Surat tidak valid!'; errorEl.classList.remove('hidden'); return; }
-    if (isNaN(ayahNum) || ayahNum <= 0 || ayahNum > foundSurah.totalAyahs) {
-        errorEl.textContent = `Ayat tidak valid! ${foundSurah.name} maks ${foundSurah.totalAyahs} ayat.`;
-        errorEl.classList.remove('hidden'); return;
-    }
-
-    errorEl.classList.add('hidden');
-    document.getElementById('last-surat').textContent = foundSurah.name;
-    document.getElementById('last-ayat').textContent = `Ayat ke-${ayahNum}`;
-    document.getElementById('quran-lastread').classList.remove('hidden');
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>owI PrayTrack 98</title>
     
-    if(!alreadyGotPoints) {
-        addPoint('quran', 13);
-        alreadyGotPoints = true;
-    }
-};
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body { 
+            font-family: 'VT323', monospace; 
+            background-color: #008080; 
+            color: #000;
+            font-size: 18px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .win98-window {
+            background: #C0C0C0;
+            border-top: 2px solid #FFFFFF;
+            border-left: 2px solid #FFFFFF;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            box-shadow: 1px 1px 0 0 #000;
+        }
+        .win98-titlebar {
+            background: #000080;
+            color: #FFF;
+            font-weight: bold;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+        .win98-btn {
+            background: #C0C0C0;
+            border-top: 2px solid #FFFFFF;
+            border-left: 2px solid #FFFFFF;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            font-family: 'VT323', monospace;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 16px;
+            outline: 1px solid #000;
+        }
+        .win98-btn:active {
+            border-top: 2px solid #404040;
+            border-left: 2px solid #404040;
+            border-right: 2px solid #FFFFFF;
+            border-bottom: 2px solid #FFFFFF;
+        }
+        input, select {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            background: #FFF;
+            color: #000;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #FFFFFF;
+            border-bottom: 2px solid #FFFFFF;
+            padding: 2px 4px;
+        }
+        *, *::before, *::after { border-radius: 0 !important; }
+
+        .nav-active {
+            background: #A0A0A0 !important;
+            border-top: 2px solid #404040 !important;
+            border-left: 2px solid #404040 !important;
+            border-right: 2px solid #FFFFFF !important;
+            border-bottom: 2px solid #FFFFFF !important;
+        }
+        .retro-icon { image-rendering: pixelated; }
+
+        html.dark body { background-color: #000000; color: #00FF00; }
+        html.dark .win98-window { background: #1A1A1A; border-color: #808080 #000 #000 #808080; }
+        html.dark .win98-titlebar { background: #800080; color: #00FF00; }
+        html.dark .win98-btn { background: #1A1A1A; color: #00FF00; border-color: #808080 #000 #000 #808080; outline-color: #00FF00; }
+        html.dark .win98-btn:active { border-color: #000 #808080 #808080 #000; }
+        html.dark .nav-active { background: #333 !important; border-color: #000 #000 #808080 #808080 !important; }
+        html.dark input, html.dark select { background: #000; color: #00FF00; border-color: #000 #808080 #808080 #000; }
+        html.dark .bg-black { background-color: #0D0D0D; color: #00FF00; }
+        html.dark .text-gray-600, html.dark .text-gray-400 { color: #A0A0A0 !important; }
+        html.dark .text-blue-800, html.dark .text-red-800 { color: #00FFFF !important; }
+        html.dark .text-green-600, html.dark .text-green-400 { color: #00FF00 !important; }
+        html.dark .text-red-500, html.dark .text-red-700 { color: #FF5555 !important; }
+        html.dark .text-amber-600, html.dark .text-amber-700 { color: #FFFF00 !important; }
+    </style>
+</head>
+<body>
+    <div class="max-w-md mx-auto min-h-screen flex flex-col relative overflow-hidden">
+        <header class="win98-window" style="border: none; border-bottom: 2px solid #404040;">
+            <div class="win98-titlebar">
+                <span>owI PrayTrack</span>
+                <button class="win98-btn" onclick="window.toggleSidebar()" style="padding: 2px; line-height: 0;">
+                    <img src="icon-192x192.png" alt="Menu" class="retro-icon" style="height: 16px; width: 16px;">
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto hide-scrollbar p-2 pb-12" id="main-content">
+            <!-- KALO JS GAGAL, INI YANG MUNCUL -->
+            <div class="win98-window m-4">
+                <div class="win98-titlebar"><span>Error_Load.sys</span></div>
+                <div class="p-4 text-red-700">
+                    <p><b>Sistem gagal memuat modul.</b></p>
+                    <p class="mt-2 text-sm">Pastikan folder <b>modules</b> dan <b>data</b> ada di repo GitHub lu. Baca dokumentasi struktur folder!</p>
+                </div>
+            </div>
+        </main>
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 hidden z-20" onclick="window.toggleSidebar()"></div>
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 win98-window z-30 transform -translate-x-full transition-transform duration-300 p-0 border-l-0 border-t-0 border-b-0" style="border-right: 2px solid #404040;">
+            <div class="win98-titlebar" style="border:none; border-bottom: 2px solid #404040;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <img src="icon-192x192.png" alt="owI" class="retro-icon" style="height: 18px; width: 18px;">
+                    <span>Start_Menu.exe</span>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <button onclick="window.editProfile()" class="w-full text-left p-2 hover:bg-gray-300 dark:hover:bg-gray-800">👤 <span id="sidebar-profile-btn">Edit Nama</span></button>
+                <button onclick="window.toggleTheme()" class="w-full text-left p-2 hover:bg-gray-300 dark:hover:bg-gray-800">🌙 <span id="sidebar-theme-btn">Tema Gelap</span></button>
+                <hr class="border-gray-400 dark:border-gray-700 my-2">
+                <button onclick="window.resetData()" class="w-full text-left p-2 hover:bg-red-200 dark:hover:bg-red-900 text-red-700 dark:text-red-400">🗑️ Reset Data</button>
+                <hr class="border-gray-400 dark:border-gray-700 my-2">
+                <a href="https://trakteer.id/owi_apps/gift" target="_blank" class="block w-full text-left p-2 hover:bg-amber-100 dark:hover:bg-amber-900 text-amber-700 dark:text-amber-400">☕ Dukung App</a>
+            </div>
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto win98-window z-10" style="border: none; border-top: 2px solid #FFFFFF;">
+            <div class="flex justify-around p-1">
+                <button onclick="window.navigateTo('dashboard')" class="nav-btn win98-btn flex-1 mx-1 text-center text-sm" data-tab="dashboard">🏠 Home</button>
+                <button onclick="window.navigateTo('sholat')" class="nav-btn win98-btn flex-1 mx-1 text-center text-sm" data-tab="sholat">🤲 Sholat</button>
+                <button onclick="window.navigateTo('quran')" class="nav-btn win98-btn flex-1 mx-1 text-center text-sm" data-tab="quran">📖 Quran</button>
+                <button onclick="window.navigateTo('utang')" class="nav-btn win98-btn flex-1 mx-1 text-center text-sm" data-tab="utang">⏳ Utang</button>
+                <button onclick="window.navigateTo('amalJariyah')" class="nav-btn win98-btn flex-1 mx-1 text-center text-sm" data-tab="amalJariyah">💰 Amal</button>
+            </div>
+        </nav>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+</body>
+</html>
