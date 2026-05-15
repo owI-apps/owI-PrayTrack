@@ -5,10 +5,10 @@ const urlsToCache = [
   './app.js',
   './data/quranData.json',
   './icon-192x192.png',
-  './icon-512x512.png'
+  './logo-512x512.png'
 ];
 
-// Install: Simpan semua file dasar ke cache
+// Install: Simpan file dasar
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -17,23 +17,35 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  self.skipWaiting(); // Langsung aktif tanpa nunggu tab lama ditutup
 });
 
-// Fetch: Kalau user minta file, cek cache dulu. Kalau ada, pake cache. Kalau nggak, fetch internet.
+// Fetch: Ambil dari cache dulu, kalau nggak ada fetch internet terus simpen ke cache
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
-          return response; // Pakai yang di cache (Offline mode)
+          return response; // Pakai yang offline
         }
-        return fetch(event.request); // Ambil dari internet
+        // Fetch dari internet kalau belum ada di cache (misal: modules/sholat.js)
+        return fetch(event.request).then(networkResponse => {
+          // Jangan cache file dari luar (CDN Tailwind/Google Fonts) biar nggak ribet update
+          if (!event.request.url.startsWith(self.location.origin)) {
+            return networkResponse;
+          }
+          // Simpen file baru ke cache biar next time bisa offline
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request.url, networkResponse.clone());
+            return networkResponse;
+          });
+        });
       }
     )
   );
 });
 
-// Activate: Bersihin cache lama kalau ada update
+// Activate: Bersihin cache versi lama
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -41,10 +53,11 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName); // Hapus cache versi lama
+            return caches.delete(cacheName);
           }
         })
       );
     })
   );
+  self.clients.claim(); // Ambil alih kendali halaman langsung
 });
