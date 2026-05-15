@@ -1,6 +1,6 @@
 import { appState } from '../app.js';
 
-export function renderDashboard() {
+function renderDashboard() {
     const main = document.getElementById('main-content');
     const tp = appState.points.wajib + appState.points.sunnah + appState.points.quran + appState.points.infaq;
     const pct = Math.min((tp / 100) * 100, 100);
@@ -48,7 +48,7 @@ export function renderDashboard() {
             <div class="p-4">
                 <p class="mb-2">Progress Hari Ini:</p>
                 <pre style="font-size: 20px; letter-spacing: 2px; margin-bottom: 8px;">${progressBar}</pre>
-                <p class="font-bold text-blue-800" style="font-size: 20px;">${statusMsg}</p>
+                <p class="font-bold text-blue-800 dark:text-cyan-400" style="font-size: 20px;">${statusMsg}</p>
             </div>
         </div>
 
@@ -88,7 +88,7 @@ export function renderDashboard() {
                 <p class="font-bold">Sisa Utang Ibadah:</p>
                 ${sisaSholat > 0 ? `<p>🕌 Sholat: ${sisaSholat} waktu</p>` : ''}
                 ${sisaPuasa > 0 ? `<p>🌙 Puasa: ${sisaPuasa} hari</p>` : ''}
-                <p class="mt-2 text-red-800 font-bold">>> KLIK DISINI UNTUK MELUNASI <<</p>
+                <p class="mt-2 text-red-800 dark:text-red-400 font-bold">>> KLIK DISINI UNTUK MELUNASI <<</p>
             </div>
         </button>
         ` : `
@@ -114,3 +114,7 @@ export function renderDashboard() {
         </div>
     `;
 }
+
+// EXPORT DUA-DUANYA BIAR NGGAK BENTROK SAMA APP.JS
+export default renderDashboard;
+export { renderDashboard };
