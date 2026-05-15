@@ -42,7 +42,7 @@ export default function renderSholat() {
                     ${sunnah.map(x => `
                         <label class="flex items-center justify-between py-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 ${x.t === 'd' ? 'font-bold text-green-800 dark:text-green-400' : ''}">
                             <span>${x.n}</span>
-                            <input type="checkbox" data-type="sunnah" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
+                            <input type="checkbox" data-type="sunnah" data-name="${x.n}" class="sholat-check" style="width: 20px; height: 20px; cursor: pointer;">
                         </label>
                     `).join('')}
                 </div>
@@ -54,7 +54,7 @@ export default function renderSholat() {
     document.querySelectorAll('.sholat-check').forEach(cb => {
         cb.addEventListener('change', e => {
             const type = e.target.dataset.type;
-            const name = e.target.dataset.name; // Ambil nama sholat wajib
+            const name = e.target.dataset.name;
             
             if (e.target.checked) {
                 // Kalau dicentang, dapet poin
