@@ -1,0 +1,22 @@
+{
+  "name": "owI PrayTrack 98",
+  "short_name": "PrayTrack98",
+  "description": "Aplikasi Pelacak Ibadah & Taubat bergaya Windows 98",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#008080",
+  "theme_color": "#000080",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
