@@ -1,4 +1,4 @@
-const CACHE_NAME = 'praytrack98-v5';
+const CACHE_NAME = 'praytrack98-v6';
 const urlsToCache = [
   './',
   './index.html',
