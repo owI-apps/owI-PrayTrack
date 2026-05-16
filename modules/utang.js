@@ -109,7 +109,7 @@ export default function renderUtang() {
     // ================= LOGIC SHOLAT =================
     window.hL = () => {
         const b = parseInt(document.getElementById('cb').value), s = parseInt(document.getElementById('cs').value);
-        if (!b || !s || s <= b) { alert('Umur sekarang harus lebih tua dari umur baligh!'); return; }
+        if (!b || !s || s <= b) { window.playSound('chord');  window.playSound('chord');  alert('Umur sekarang harus lebih tua dari umur baligh!'); return; }
         const m = (s - b) * 12;
         const bolos = { Subuh: parseInt(document.getElementById('c1').value)||0, Dzuhur: parseInt(document.getElementById('c2').value)||0, Ashar: parseInt(document.getElementById('c3').value)||0, Maghrib: parseInt(document.getElementById('c4').value)||0, Isya: parseInt(document.getElementById('c5').value)||0 };
         let h = "";
@@ -147,7 +147,7 @@ export default function renderUtang() {
     window.addPuasa = () => {
         const ket = document.getElementById('puasa-ket').value;
         const total = parseInt(document.getElementById('puasa-total').value);
-        if (!ket || !total || total <= 0) { alert('Isi keterangan dan total hari!'); return; }
+        if (!ket || !total || total <= 0) { window.playSound('chord');  window.playSound('chord');  alert('Isi keterangan dan total hari!'); return; }
         appState.utangPuasa.push({ keterangan: ket, total: total, lunas: 0 });
         saveState(); r();
     };
