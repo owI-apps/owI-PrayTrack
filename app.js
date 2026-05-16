@@ -1,5 +1,33 @@
 import { renderDashboard } from './modules/dashboard.js';
 
+// ==========================================
+// SISTEM SUARA WIN 98 (AUDIO ENGINE)
+// ==========================================
+const audioCache = {
+    click: new Audio('./assets/sounds/click.mp3'),
+    chord: new Audio('./assets/sounds/chord.mp3')
+};
+
+// Atur volume biar nggak terlalu nge-shock
+Object.values(audioCache).forEach(audio => audio.volume = 0.4); // 0.4 = 40% volume
+
+// Fungsi global buat dipanggil
+window.playSound = function(type) {
+    if (audioCache[type]) {
+        audioCache[type].currentTime = 0; // Rewind biar bisa dipencet cepat berkali-kali
+        audioCache[type].play().catch(e => {}); // .catch() biar nggak error kalau browser block autoplay
+    }
+};
+
+// MAGIC: Event Delegation. Ngecek semua klik di halaman.
+// Kalau yang diklik itu tombol (button), mainkan suara click!
+document.addEventListener('click', function(e) {
+    // Cek apakah yang diklik atau parent-nya adalah tombol Win98
+    if (e.target.closest('.win98-btn') || e.target.closest('button')) {
+        window.playSound('click');
+    }
+});
+
 const todayStr = new Date().toISOString().slice(0, 10);
 
 // GANTI LET JADI CONST! Pake Object.assign nanti buat nge-load
