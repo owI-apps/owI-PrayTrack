@@ -25,6 +25,7 @@ export default async function renderQuran() {
             <div class="p-4">
                 <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">📅 ${t}</p>
                 
+                <!-- KARTU TADARUS (Data Tersimpan) -->
                 <div class="win98-window mb-4">
                     <div class="win98-titlebar" style="background: ${lastRead.surahName ? '#008000' : '#404040'};">
                         <span>📖 Kartu_Tadarus.sys</span>
@@ -41,6 +42,18 @@ export default async function renderQuran() {
                     </div>
                 </div>
 
+                <!-- KARTU MULAI TADARUS (BARU) -->
+                <div class="win98-window mb-4">
+                    <div class="win98-titlebar" style="background: #008080;">
+                        <span>🌐 Mulai_Tadarus.sys</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <p class="text-sm mb-3">Lanjutkan bacaanmu atau mulai surat baru langsung dari sumbernya.</p>
+                        <a href="https://quran.nu.or.id/" target="_blank" rel="noopener noreferrer" class="win98-btn w-full text-center font-bold block text-lg">📖 Mulai Baca</a>
+                    </div>
+                </div>
+
+                <!-- FORM INPUT -->
                 <h3 class="font-bold mb-2">Update Posisi (+13 Poin)</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Pilih nama surat dan masukkan nomor ayat</p>
                 
