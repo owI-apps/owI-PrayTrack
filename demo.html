@@ -137,6 +137,69 @@
             display: block;
         }
 
+        /* VISUAL LOG / GALERI SCREENSHOT (BARU) */
+        .gallery-section {
+            margin-bottom: 4rem;
+        }
+
+        .gallery-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-magenta);
+            text-shadow: 0 0 10px var(--neon-magenta);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .screenshot-frame {
+            position: relative;
+            border: 1px solid var(--neon-green);
+            background: #000;
+            overflow: hidden;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-frame:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .screenshot-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: grayscale(20%) contrast(1.1);
+        }
+
+        .screenshot-frame:hover img {
+            transform: scale(1.05);
+            filter: grayscale(0%) contrast(1.2) brightness(1.1);
+        }
+
+        .frame-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 10, 10, 0.8);
+            border-top: 1px solid var(--neon-cyan);
+            padding: 0.5rem 1rem;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-cyan);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
         /* FEATURES LIST */
         .features {
             background: var(--panel-bg);
@@ -250,6 +313,37 @@
                 <span class="icon">💔</span>
                 <h2>DOSAKU_&_TAUBAT.SYS</h2>
                 <p>Deep introspection journal. Categorize sins (Haqqullah/Haqqul Ibad) and triggers. Mark as repented—never deleted, a permanent reminder to change.</p>
+            </div>
+        </div>
+
+        <!-- BAGIAN GALERI SCREENSHOT BARU -->
+        <div class="gallery-section">
+            <h2>> VISUAL_LOG.SYS</h2>
+            <div class="gallery-grid">
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss1.png" alt="Dashboard">
+                    <div class="frame-overlay">System_Dashboard.exe</div>
+                </div>
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss2.png" alt="Sholat Module">
+                    <div class="frame-overlay">Agenda_Sholat.exe</div>
+                </div>
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss3.png" alt="Quran Module">
+                    <div class="frame-overlay">Al_Quran.exe</div>
+                </div>
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss4.png" alt="Utang Module">
+                    <div class="frame-overlay">Utang_Ibadah.sys</div>
+                </div>
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss5.png" alt="Amal Module">
+                    <div class="frame-overlay">Amal_Jariyah.exe</div>
+                </div>
+                <div class="screenshot-frame">
+                    <img src="./assets/images/ss6.png" alt="Dark Mode CRT">
+                    <div class="frame-overlay">CRT_Terminal_Mode</div>
+                </div>
             </div>
         </div>
 
