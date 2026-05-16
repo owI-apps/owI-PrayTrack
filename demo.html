@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>owI PrayTrack 98 // SYSTEM_INIT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-green: #00FF00;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --dark-bg: #050505;
+            --panel-bg: rgba(10, 10, 10, 0.85);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ANIMATED GRID BACKGROUND */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridMove 5s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(0deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(0deg) translateY(50px); }
+        }
+
+        /* CRT SCANLINE EFFECT */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+            letter-spacing: 3px;
+            animation: flicker 3s infinite alternate;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.8; text-shadow: 0 0 5px var(--neon-cyan); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            border-top: 2px solid var(--neon-green);
+            border-bottom: 2px solid var(--neon-green);
+            display: inline-block;
+            padding: 0.5rem 2rem;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        /* MODULES SECTION */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-green);
+            padding: 1.5rem;
+            position: relative;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed var(--neon-green);
+            padding-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #CCC;
+        }
+
+        .card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* FEATURES LIST */
+        .features {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-magenta);
+            padding: 2.5rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .features h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-magenta);
+            text-shadow: 0 0 10px var(--neon-magenta);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .features ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .features li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.1rem;
+            color: #FFF;
+        }
+
+        .features li::before {
+            content: '>';
+            color: var(--neon-magenta);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* LAUNCH BUTTON */
+        .launch-container {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .btn-launch {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+            background: var(--neon-cyan);
+            border: none;
+            padding: 1rem 3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            box-shadow: 0 0 20px var(--neon-cyan);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-launch:hover {
+            background: var(--neon-green);
+            box-shadow: 0 0 30px var(--neon-green);
+            transform: scale(1.05);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .subtitle { font-size: 0.9rem; letter-spacing: 2px; }
+            .container { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div class="container">
+        <header>
+            <h1>owI PrayTrack 98</h1>
+            <div class="subtitle">Retro UI // Futuristic Accountability</div>
+        </header>
+
+        <div class="modules-grid">
+            <div class="card">
+                <span class="icon">🤲</span>
+                <h2>SHOLAT_TRACKER.SYS</h2>
+                <p>Smart Fardhu & Sunnah checklist. Selecting "Tidak Sholat" automatically generates a debt log in the Utang module. Changing status auto-cancels the debt.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📖</span>
+                <h2>AL_QURAN.EXE</h2>
+                <p>Cache your last read position instantly. Integrated redirect to Quran.com for seamless tadarus continuation. +13 Poin harian.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⏳</span>
+                <h2>UTANG_IBADAH.SYS</h2>
+                <p>Qadha Sholat calculator based on Baligh age formula. Systematic Qadha Puasa tracker. Visualize your debt-free journey with progress bars.</p>
+            </div>
+            <div class="card">
+                <span class="icon">💰</span>
+                <h2>AMAL_JARIYAH.EXE</h2>
+                <p>Infaq & Sadaqah logger. Auto-calculating Zakat Mal (Nisab 85g Gold = 2.5%) and Zakat Fitrah checklist.</p>
+            </div>
+            <div class="card">
+                <span class="icon">💔</span>
+                <h2>DOSAKU_&_TAUBAT.SYS</h2>
+                <p>Deep introspection journal. Categorize sins (Haqqullah/Haqqul Ibad) and triggers. Mark as repented—never deleted, a permanent reminder to change.</p>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>> SYSTEM_SPECS</h2>
+            <ul>
+                <li>100% Offline PWA (Installable Android/iOS)</li>
+                <li>Zero Framework (Pure Vanilla JS & ES6 Modules)</li>
+                <li>Win98 UI with CRT/Hacker Terminal Dark Mode</li>
+                <li>Authentic Windows 98 Audio Feedback (Click/Chord)</li>
+                <li>Local Storage Encrypted State (Zero Cloud Tracking)</li>
+            </ul>
+        </div>
+
+        <div class="launch-container">
+            <a href="./index.html" class="btn-launch">>> LAUNCH APP <<</a>
+        </div>
+    </div>
+
+</body>
+</html>
