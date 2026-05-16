@@ -1,11 +1,20 @@
-const CACHE_NAME = 'praytrack98-v4';
+const CACHE_NAME = 'praytrack98-v5';
 const urlsToCache = [
   './',
   './index.html',
+  './demo.html', // <--- TAMBAHIN INI
   './app.js',
   './data/quranData.json',
   './icon-192x192.png',
-  './logo-512x512.png'
+  './logo-512x512.png',
+  './assets/sounds/click.mp3',
+  './assets/sounds/chord.mp3',
+  './assets/images/ss1.png', // <--- TAMBAHIN GAMBAR BIAR OFFLINE
+  './assets/images/ss2.png',
+  './assets/images/ss3.png',
+  './assets/images/ss4.png',
+  './assets/images/ss5.png',
+  './assets/images/ss6.png'
 ];
 
 // Install: Simpan file dasar
