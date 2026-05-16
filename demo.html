@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>owI PrayTrack 98 // SYSTEM_INIT</title>
+    <title>owI Pray Track // SYSTEM_INIT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -63,6 +63,22 @@
         header {
             text-align: center;
             margin-bottom: 4rem;
+        }
+
+        /* LOGO FUTURISTIK */
+        .logo-demo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            image-rendering: pixelated;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px var(--neon-cyan);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px var(--neon-cyan); }
+            100% { box-shadow: 0 0 30px var(--neon-cyan); }
         }
 
         h1 {
@@ -137,7 +153,7 @@
             display: block;
         }
 
-        /* VISUAL LOG / GALERI SCREENSHOT (BARU) */
+        /* VISUAL LOG / GALERI SCREENSHOT */
         .gallery-section {
             margin-bottom: 4rem;
         }
@@ -162,8 +178,13 @@
             border: 1px solid var(--neon-green);
             background: #000;
             overflow: hidden;
+            min-height: 250px;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0a0a0a;
         }
 
         .screenshot-frame:hover {
@@ -174,7 +195,8 @@
 
         .screenshot-frame img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
             display: block;
             transition: transform 0.3s ease, filter 0.3s ease;
             filter: grayscale(20%) contrast(1.1);
@@ -273,6 +295,7 @@
         /* RESPONSIVE */
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
+            .logo-demo { width: 90px; height: 90px; }
             .subtitle { font-size: 0.9rem; letter-spacing: 2px; }
             .container { padding: 2rem 1rem; }
         }
@@ -284,11 +307,18 @@
 
     <div class="container">
         <header>
-            <h1>owI PrayTrack 98</h1>
+            <!-- LOGO APLIKASI -->
+            <img src="./icon-192x192.png" alt="owI Logo" class="logo-demo">
+            <h1>owI Pray Track</h1>
             <div class="subtitle">Retro UI // Futuristic Accountability</div>
         </header>
 
         <div class="modules-grid">
+            <div class="card">
+                <span class="icon">📱</span>
+                <h2>owI Pray Track.SYS</h2>
+                <p>The OWI Pray Track is a thematic robotics challenge where an OWI-based robot must autonomously navigate a track designed around a "spiritual journey" or "ritual" concept. The robot must travel along a designated path to reach specific sacred points or offerings.</p>
+            </div>
             <div class="card">
                 <span class="icon">🤲</span>
                 <h2>SHOLAT_TRACKER.SYS</h2>
@@ -316,11 +346,11 @@
             </div>
         </div>
 
-        <!-- BAGIAN GALERI SCREENSHOT BARU -->
+        <!-- BAGIAN GALERI SCREENSHOT -->
         <div class="gallery-section">
             <h2>> VISUAL_LOG.SYS</h2>
             <div class="gallery-grid">
-                <div class="screenshot-frame">
+               <div class="screenshot-frame">
                     <img src="./assets/images/ss2.png" alt="Dark Mode CRT">
                     <div class="frame-overlay">CRT_Terminal_Mode</div>
                 </div>
@@ -343,7 +373,7 @@
                 <div class="screenshot-frame">
                     <img src="./assets/images/ss3.png" alt="Amal Module">
                     <div class="frame-overlay">Amal_Jariyah.exe</div>
-                </div>
+                </div> 
             </div>
         </div>
 
