@@ -181,7 +181,7 @@ window.tC = id => { document.getElementById(id).classList.toggle('hidden'); };
 
 window.aI = () => { 
     const k=document.getElementById('ik').value, n=parseInt(document.getElementById('ii').value); 
-    if(!n||n<=0){alert('Isi nominal!');return;} 
+    if(!n||n<=0){window.playSound('chord'); window.playSound('chord');  alert('Isi nominal!');return;} 
     appState.infaqList.unshift({kategori: k, nominal: n}); 
     if(!appState.infaqClaimedToday){addPoint('infaq',10);appState.infaqClaimedToday = true;}
     saveState();
@@ -197,7 +197,7 @@ window.dI = i => {
 window.hZM = () => {
     const hargaEmas = parseInt(document.getElementById('zm-emas').value) || 0;
     const totalHarta = parseInt(document.getElementById('zm-harta').value) || 0;
-    if (!hargaEmas || !totalHarta) { alert('Isi harga emas dan total harta!'); return; }
+    if (!hargaEmas || !totalHarta) { window.playSound('chord'); window.playSound('chord');  alert('Isi harga emas dan total harta!'); return; }
     const nisab = 85 * hargaEmas; 
     const hasilEl = document.getElementById('zm-hasil');
     const textEl = document.getElementById('zm-hasil-text');
@@ -230,7 +230,7 @@ window.tambahDosa = () => {
     const siapa = document.getElementById('d-siapa').value.trim() || '-';
     const pemicu = document.getElementById('d-pemicu').value;
 
-    if (!apa) { alert('Isi apa dosa yang kamu lakukan!'); return; }
+    if (!apa) { window.playSound('chord'); window.playSound('chord'); window.playSound('chord');  alert('Isi apa dosa yang kamu lakukan!'); return; }
 
     appState.dosaList.push({
         kategori: kat,
