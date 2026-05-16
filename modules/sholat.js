@@ -84,10 +84,10 @@ export default function renderSholat() {
                     const existingDebt = appState.utangSholat.find(u => u.sholat === name);
                     if (existingDebt) { existingDebt.total += 1; } else { appState.utangSholat.push({ sholat: name, total: 1, lunas: 0 }); }
                     saveState();
-                    alert(`⚠️ Utang sholat ${name} ditambahkan.`);
+                    window.playSound('chord');  alert(`⚠️ Utang sholat ${name} ditambahkan.`);
                 } else if (isToday && (status === 'jamaah' || status === 'sendiri') && prevStatus === 'tidak') {
                     const debt = appState.utangSholat.find(u => u.sholat === name);
-                    if (debt && debt.total > 0) { debt.total -= 1; if(debt.total===0) appState.utangSholat = appState.utangSholat.filter(u=>u.total>0); saveState(); alert(`✅ Utang ${name} dibatalkan.`); }
+                    if (debt && debt.total > 0) { debt.total -= 1; if(debt.total===0) appState.utangSholat = appState.utangSholat.filter(u=>u.total>0); saveState(); window.playSound('chord');  alert(`✅ Utang ${name} dibatalkan.`); }
                 }
             });
         });
